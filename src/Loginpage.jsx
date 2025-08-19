@@ -1,5 +1,5 @@
 import { useState } from 'react';
-         
+
 const API_URL = 'http://localhost:3000';
 
 export default function LoginPage({ onSwitchToSignup }) {
@@ -161,9 +161,6 @@ export default function LoginPage({ onSwitchToSignup }) {
             >
               Sign up here
             </button>
-          </p>
-          <p className="text-xs text-gray-500 mt-2">
-            Have an invite link? Use it during signup to join an organization
           </p>
         </div>
       </div>

@@ -209,9 +209,7 @@ export default function SignupPage({ onSwitchToLogin }) {
             {errors.organizationId && (
               <p className="text-sm text-red-600 mt-1">{errors.organizationId}</p>
             )}
-            <p className="text-xs text-gray-500 mt-1">
-              Leave blank to create a personal account
-            </p>
+
           </div>
 
           {/* Submit Button */}
