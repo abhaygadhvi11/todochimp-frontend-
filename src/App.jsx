@@ -24,4 +24,4 @@ export default function App() {
   }
 
   return <LoginPage onSwitchToSignup={switchToSignup} />;
-}
+} 

@@ -8,16 +8,17 @@ export default function SignupPage({ onSwitchToLogin }) {
     email: '',
     password: '',
     organizationId: '',
-    role: 'USER'
+    role: 'USER',
+    agreeToTerms: false
   });
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
+    const { name, value, type, checked } = e.target;
     setFormData(prev => ({
       ...prev,
-      [name]: value
+      [name]: type === 'checkbox' ? checked : value
     }));
     if (errors[name]) {
       setErrors(prev => ({
@@ -27,18 +28,34 @@ export default function SignupPage({ onSwitchToLogin }) {
     }
   };
 
+  const validateForm = () => {
+    const newErrors = {};
+    
+    if (!formData.agreeToTerms) {
+      newErrors.agreeToTerms = 'You must agree to the terms and conditions';
+    }
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleSubmit = async () => {
+    if (!validateForm()) {
+      return;
+    }
+
     setIsLoading(true);
     setErrors({});
 
     try {
       console.log('Connecting to:', `${API_URL}/api/auth/register`);
       
-      // Prepare data - remove organizationId if empty
+      // Prepare data - remove organizationId if empty and exclude agreeToTerms from API call
       const submitData = { ...formData };
       if (!submitData.organizationId.trim()) {
         delete submitData.organizationId;
       }
+      delete submitData.agreeToTerms; // Don't send this to API
       
       const response = await fetch(`${API_URL}/api/auth/register`, {
         method: 'POST',
@@ -209,7 +226,42 @@ export default function SignupPage({ onSwitchToLogin }) {
             {errors.organizationId && (
               <p className="text-sm text-red-600 mt-1">{errors.organizationId}</p>
             )}
+          </div>
 
+          {/* Terms and Conditions Checkbox */}
+          <div>
+            <label className="flex items-start space-x-3">
+              <input
+                name="agreeToTerms"
+                type="checkbox"
+                checked={formData.agreeToTerms}
+                onChange={handleChange}
+                className={`h-4 w-4 mt-1 text-blue-600 focus:ring-blue-500 border-gray-300 rounded ${
+                  errors.agreeToTerms ? 'border-red-300' : ''
+                }`}
+              />
+              <span className="text-sm text-gray-700 leading-5">
+                I agree to the{' '}
+                <a 
+                  href="/terms" 
+                  target="_blank" 
+                  className="text-blue-600 hover:text-blue-700 underline"
+                >
+                  Terms and Conditions
+                </a>{' '}
+                and{' '}
+                <a 
+                  href="/privacy" 
+                  target="_blank" 
+                  className="text-blue-600 hover:text-blue-700 underline"
+                >
+                  Privacy Policy
+                </a>
+              </span>
+            </label>
+            {errors.agreeToTerms && (
+              <p className="text-sm text-red-600 mt-1">{errors.agreeToTerms}</p>
+            )}
           </div>
 
           {/* Submit Button */}
@@ -235,9 +287,6 @@ export default function SignupPage({ onSwitchToLogin }) {
             >
               Sign in here
             </button>
-          </p>
-          <p className="text-xs text-gray-500 mt-2">
-            By creating an account, you agree to our Terms of Service
           </p>
         </div>
       </div>
