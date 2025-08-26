@@ -31,7 +31,8 @@ export default function ResetPasswordPage({ token, onBackToLogin }) {
   const validateForm = () => {
     const newErrors = {};
 
-    const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/;
+    const passwordPattern =
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
     if (!formData.newPassword) {
       newErrors.newPassword = "Password is required";
