@@ -40,7 +40,7 @@ export default function ResetPasswordPage({ token, onBackToLogin }) {
       newErrors.newPassword = "Password must be at least 8 characters";
     } else if (!passwordPattern.test(formData.newPassword)) {
       newErrors.newPassword =
-        "Password must include uppercase, lowercase, and a number";
+        "Password must be at least 8 characters, include uppercase, lowercase, number, and special character";
     }
 
     if (!formData.confirmPassword) {
