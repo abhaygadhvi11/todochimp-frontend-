@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Eye, EyeOff, Mail, Lock, User, UserCheck, Building } from 'lucide-react';
 
 const API_URL = 'http://localhost:3000';
 
@@ -13,6 +14,7 @@ export default function SignupPage({ onSwitchToLogin }) {
   });
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -95,6 +97,21 @@ export default function SignupPage({ onSwitchToLogin }) {
     }
   };
 
+  // Eye Icon Component
+  const EyeIcon = ({ isVisible, onClick }) => (
+    <button
+      type="button"
+      onClick={onClick}
+      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none transition-colors"
+    >
+      {isVisible ? (
+        <Eye className="w-5 h-5" />
+      ) : (
+        <EyeOff className="w-5 h-5" />
+      )}
+    </button>
+  );
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
       {/* Background decoration */}
@@ -129,17 +146,20 @@ export default function SignupPage({ onSwitchToLogin }) {
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Full Name
             </label>
-            <input
-              name="name"
-              type="text"
-              required
-              value={formData.name}
-              onChange={handleChange}
-              className={`w-full px-4 py-3 bg-white/60 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all ${
-                errors.name ? 'border-red-300' : 'border-gray-200'
-              }`}
-              placeholder="Enter your full name"
-            />
+            <div className="relative">
+              <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <input
+                name="name"
+                type="text"
+                required
+                value={formData.name}
+                onChange={handleChange}
+                className={`w-full pl-12 pr-4 py-3 bg-white/60 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all ${
+                  errors.name ? 'border-red-300' : 'border-gray-200'
+                }`}
+                placeholder="Enter your full name"
+              />
+            </div>
             {errors.name && (
               <p className="text-sm text-red-600 mt-1">{errors.name}</p>
             )}
@@ -150,17 +170,20 @@ export default function SignupPage({ onSwitchToLogin }) {
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Email Address
             </label>
-            <input
-              name="email"
-              type="email"
-              required
-              value={formData.email}
-              onChange={handleChange}
-              className={`w-full px-4 py-3 bg-white/60 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all ${
-                errors.email ? 'border-red-300' : 'border-gray-200'
-              }`}
-              placeholder="Enter your email"
-            />
+            <div className="relative">
+              <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <input
+                name="email"
+                type="email"
+                required
+                value={formData.email}
+                onChange={handleChange}
+                className={`w-full pl-12 pr-4 py-3 bg-white/60 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all ${
+                  errors.email ? 'border-red-300' : 'border-gray-200'
+                }`}
+                placeholder="Enter your email"
+              />
+            </div>
             {errors.email && (
               <p className="text-sm text-red-600 mt-1">{errors.email}</p>
             )}
@@ -171,17 +194,24 @@ export default function SignupPage({ onSwitchToLogin }) {
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Password
             </label>
-            <input
-              name="password"
-              type="password"
-              required
-              value={formData.password}
-              onChange={handleChange}
-              className={`w-full px-4 py-3 bg-white/60 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all ${
-                errors.password ? 'border-red-300' : 'border-gray-200'
-              }`}
-              placeholder="Create a password"
-            />
+            <div className="relative">
+              <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <input
+                name="password"
+                type={showPassword ? "text" : "password"}
+                required
+                value={formData.password}
+                onChange={handleChange}
+                className={`w-full pl-12 pr-12 py-3 bg-white/60 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all ${
+                  errors.password ? 'border-red-300' : 'border-gray-200'
+                }`}
+                placeholder="Create a password"
+              />
+              <EyeIcon 
+                isVisible={showPassword} 
+                onClick={() => setShowPassword(!showPassword)} 
+              />
+            </div>
             {errors.password && (
               <p className="text-sm text-red-600 mt-1">{errors.password}</p>
             )}
@@ -192,17 +222,25 @@ export default function SignupPage({ onSwitchToLogin }) {
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Role
             </label>
-            <select
-              name="role"
-              value={formData.role}
-              onChange={handleChange}
-              className={`w-full px-4 py-3 bg-white/60 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all ${
-                errors.role ? 'border-red-300' : 'border-gray-200'
-              }`}
-            >
-              <option value="USER">User</option>
-              <option value="ADMIN">Admin</option>
-            </select>
+            <div className="relative">
+              <UserCheck className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <select
+                name="role"
+                value={formData.role}
+                onChange={handleChange}
+                className={`w-full pl-12 pr-4 py-3 bg-white/60 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all appearance-none ${
+                  errors.role ? 'border-red-300' : 'border-gray-200'
+                }`}
+              >
+                <option value="USER">User</option>
+                <option value="ADMIN">Admin</option>
+              </select>
+              <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
+                <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </div>
+            </div>
             {errors.role && (
               <p className="text-sm text-red-600 mt-1">{errors.role}</p>
             )}
@@ -213,16 +251,19 @@ export default function SignupPage({ onSwitchToLogin }) {
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Organization ID <span className="text-gray-400 text-xs">(Optional)</span>
             </label>
-            <input
-              name="organizationId"
-              type="text"
-              value={formData.organizationId}
-              onChange={handleChange}
-              className={`w-full px-4 py-3 bg-white/60 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all ${
-                errors.organizationId ? 'border-red-300' : 'border-gray-200'
-              }`}
-              placeholder="Enter organization ID (if applicable)"
-            />
+            <div className="relative">
+              <Building className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <input
+                name="organizationId"
+                type="text"
+                value={formData.organizationId}
+                onChange={handleChange}
+                className={`w-full pl-12 pr-4 py-3 bg-white/60 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all ${
+                  errors.organizationId ? 'border-red-300' : 'border-gray-200'
+                }`}
+                placeholder="Enter organization ID (if applicable)"
+              />
+            </div>
             {errors.organizationId && (
               <p className="text-sm text-red-600 mt-1">{errors.organizationId}</p>
             )}
