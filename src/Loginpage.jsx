@@ -2,14 +2,15 @@ import { useState, useEffect } from "react";
 import { Eye, EyeOff, Mail, Lock } from "lucide-react";
 import ForgotPasswordPage from "./ForgotPasswordPage";
 import ResetPasswordPage from "./ResetPasswordPage";
+import { Link, useNavigate } from "react-router-dom";
 
-const API_URL = "http://localhost:3000";
+const API_URL = "http://localhost:3000";  
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const PASSWORD_REGEX =
-  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
 export default function LoginPage({ onSwitchToSignup }) {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -94,8 +95,9 @@ export default function LoginPage({ onSwitchToSignup }) {
           organizationName: data.data.user.organization?.name,
           token: data.data.token,
         };
-
-        alert(`Login successful! Welcome back, ${userData.name}!`);
+        localStorage.setItem("token", data.data.token);
+        localStorage.setItem("user", JSON.stringify(userData));
+        navigate("/dashboard");
         console.log("User logged in:", userData);
       } else {
         setErrors({ general: data.error || data.message || "Login failed" });
@@ -239,13 +241,14 @@ export default function LoginPage({ onSwitchToSignup }) {
               <span className="ml-2 text-sm text-gray-700">Remember me</span>
             </label>
 
-            <button
-              type="button"
-              onClick={() => setCurrentView("forgot-password")}
-              className="text-sm text-blue-600 hover:text-blue-700 font-medium"
-            >
-              Forgot password?
-            </button>
+            <p className="text-sm text-gray-600">
+              <Link
+                to="/forgotPassword"
+                className="text-blue-600 hover:text-blue-700 font-medium"
+              >
+                Forgot Password
+              </Link>
+            </p>
           </div>
 
           {/* Submit Button */}
@@ -262,15 +265,12 @@ export default function LoginPage({ onSwitchToSignup }) {
         <div className="text-center mt-6 pt-4 border-t border-gray-200">
           <p className="text-sm text-gray-600">
             Don't have an account?{" "}
-            <button
-              onClick={() => {
-                console.log("Switching to signup...");
-                onSwitchToSignup();
-              }}
+            <Link
+              to="/signup"
               className="text-blue-600 hover:text-blue-700 font-medium"
             >
               Sign up here
-            </button>
+            </Link>
           </p>
         </div>
       </div>

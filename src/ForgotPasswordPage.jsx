@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Mail } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const API_URL = "http://localhost:3000";
 
@@ -120,12 +121,14 @@ export default function ForgotPasswordPage({ onBackToLogin }) {
           </button>
 
           {/* Back to Login */}
-          <button
-            onClick={onBackToLogin}
-            className="w-full text-blue-600 hover:text-blue-700 font-medium py-2"
-          >
-            Back to Login
-          </button>
+          <p className="text-sm text-gray-600 text-center mt-4">
+            <Link
+              to="/login"
+              className="text-blue-600 hover:text-blue-700 font-medium"
+            >
+              Back to Login
+            </Link>
+          </p>
         </div>
       </div>
     </div>

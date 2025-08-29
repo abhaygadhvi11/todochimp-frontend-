@@ -1,27 +1,31 @@
-import { useState, useEffect } from 'react';
-import LoginPage from './Loginpage';
-import SignupPage from './SignupPage';
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
+import LoginPage from "./Loginpage";
+import SignupPage from "./SignupPage";
+import ForgotPasswordPage from "./ForgotPasswordPage";
+import ResetPasswordPage from "./ResetPasswordPage";
+import DashboardPage from "./DashboardPage";
 
 export default function App() {
-  const [currentPage, setCurrentPage] = useState('login'); // 'login' or 'signup'
+  return (
+    <Router>
+      <Routes>
+        <Route path="/" element={<Navigate to="/login" replace />} />
 
-  // Check for invite token in URL on app load
-  useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const inviteToken = urlParams.get('invite');
-    
-    if (inviteToken) {
-      // If there's an invite token, go directly to signup
-      setCurrentPage('signup');
-    }
-  }, []);
+        <Route path="/login" element={<LoginPage />} />
 
-  const switchToLogin = () => setCurrentPage('login');
-  const switchToSignup = () => setCurrentPage('signup');
+        <Route path="/signup" element={<SignupPage />} />
 
-  if (currentPage === 'signup') {
-    return <SignupPage onSwitchToLogin={switchToLogin} />;
-  }
+        <Route path="/forgotPassword" element={<ForgotPasswordPage />} />
 
-  return <LoginPage onSwitchToSignup={switchToSignup} />;
-} 
+        <Route path="/resetPassword" element={<ResetPasswordPage />} />
+
+        <Route path="/dashboard" element={<DashboardPage />} />
+      </Routes>
+    </Router>
+  );
+}

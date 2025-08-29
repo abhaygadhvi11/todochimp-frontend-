@@ -1,9 +1,14 @@
 import { useState } from "react";
+import { useSearchParams } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Eye, EyeOff, Lock, Shield } from "lucide-react";
 
 const API_URL = "http://localhost:3000";
 
-export default function ResetPasswordPage({ token, onBackToLogin }) {
+export default function ResetPasswordPage({ onBackToLogin }) {
+  const [searchParams] = useSearchParams();
+  const token = searchParams.get("token");
+
   const [formData, setFormData] = useState({
     newPassword: "",
     confirmPassword: "",
@@ -30,7 +35,6 @@ export default function ResetPasswordPage({ token, onBackToLogin }) {
 
   const validateForm = () => {
     const newErrors = {};
-
     const passwordPattern =
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
@@ -40,7 +44,7 @@ export default function ResetPasswordPage({ token, onBackToLogin }) {
       newErrors.newPassword = "Password must be at least 8 characters";
     } else if (!passwordPattern.test(formData.newPassword)) {
       newErrors.newPassword =
-        "Password must be at least 8 characters, include uppercase, lowercase, number, and special character";
+        "Password must include uppercase, lowercase, number, and special character";
     }
 
     if (!formData.confirmPassword) {
@@ -54,7 +58,6 @@ export default function ResetPasswordPage({ token, onBackToLogin }) {
 
   const handleSubmit = async () => {
     const newErrors = validateForm();
-
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       return;
@@ -79,7 +82,6 @@ export default function ResetPasswordPage({ token, onBackToLogin }) {
       );
 
       const data = await response.json();
-      console.log(data);
 
       if (response.ok) {
         setMessage(
@@ -87,7 +89,7 @@ export default function ResetPasswordPage({ token, onBackToLogin }) {
         );
         setFormData({ newPassword: "", confirmPassword: "" });
         setTimeout(() => {
-          onBackToLogin();
+          if (onBackToLogin) onBackToLogin();
         }, 3000);
       } else {
         setMessage(data.error || data.message || "Failed to reset password");
@@ -112,10 +114,6 @@ export default function ResetPasswordPage({ token, onBackToLogin }) {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
-      {/* Background decoration */}
-      <div className="absolute w-40 h-40 bg-blue-400/20 rounded-full blur-xl animate-pulse"></div>
-      <div className="absolute w-40 h-40 bg-purple-400/20 rounded-full blur-xl animate-pulse"></div>
-
       {/* Reset Password Card */}
       <div className="w-full max-w-md bg-white/80 backdrop-blur-lg rounded-2xl shadow-xl border border-white/30 p-8">
         {/* Header */}
@@ -144,7 +142,7 @@ export default function ResetPasswordPage({ token, onBackToLogin }) {
 
         {/* Form */}
         <div className="space-y-6">
-          {/* New Password Field */}
+          {/* New Password */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               New Password
@@ -154,7 +152,6 @@ export default function ResetPasswordPage({ token, onBackToLogin }) {
               <input
                 name="newPassword"
                 type={showNewPassword ? "text" : "password"}
-                required
                 value={formData.newPassword}
                 onChange={handleChange}
                 className={`w-full pl-12 pr-12 py-3 bg-white/60 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all ${
@@ -172,7 +169,7 @@ export default function ResetPasswordPage({ token, onBackToLogin }) {
             )}
           </div>
 
-          {/* Confirm Password Field */}
+          {/* Confirm Password */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Confirm New Password
@@ -182,7 +179,6 @@ export default function ResetPasswordPage({ token, onBackToLogin }) {
               <input
                 name="confirmPassword"
                 type={showConfirmPassword ? "text" : "password"}
-                required
                 value={formData.confirmPassword}
                 onChange={handleChange}
                 className={`w-full pl-12 pr-12 py-3 bg-white/60 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all ${
@@ -202,7 +198,7 @@ export default function ResetPasswordPage({ token, onBackToLogin }) {
             )}
           </div>
 
-          {/* Submit Button */}
+          {/* Submit */}
           <button
             onClick={handleSubmit}
             disabled={isLoading}
@@ -212,12 +208,14 @@ export default function ResetPasswordPage({ token, onBackToLogin }) {
           </button>
 
           {/* Back to Login */}
-          <button
-            onClick={onBackToLogin}
-            className="w-full text-blue-600 hover:text-blue-700 font-medium py-2"
-          >
-            Back to Login
-          </button>
+          <div className="text-center mt-4">
+            <Link
+              to="/login"
+              className="text-blue-600 hover:text-blue-700 font-medium text-sm"
+            >
+              Back to Login
+            </Link>
+          </div>
         </div>
       </div>
     </div>
