@@ -2,22 +2,18 @@
 import React, { useState, useEffect } from "react";
 import {
   Search,
-  Bell,
-  User,
-  LogOut,
   Plus,
   BarChart3,
-  ChevronDown,
   Edit,
   Trash2,
   Eye,
-  Filter,
   ChevronLeft,
   ChevronRight,
   Sun,
   Moon,
 } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import TopNavBar from "./components/TopNavBar";
 
 const DashboardPage = () => {
   const [tasks, setTasks] = useState([]);
@@ -27,7 +23,6 @@ const DashboardPage = () => {
   const [sortBy, setSortBy] = useState("title");
   const [sortOrder, setSortOrder] = useState("asc");
   const [loading, setLoading] = useState(true);
-  const [showUserMenu, setShowUserMenu] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [tasksPerPage] = useState(10);
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);
@@ -36,6 +31,7 @@ const DashboardPage = () => {
     return storedUser ? JSON.parse(storedUser) : null;
   });
   const token = localStorage.getItem("token");
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchTasks = async () => {
@@ -44,9 +40,9 @@ const DashboardPage = () => {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`,
+            Authorization: `Bearer ${token}`,
           },
-          cache: "no-store"
+          
         });
 
         if (!res.ok) {
@@ -141,6 +137,17 @@ const DashboardPage = () => {
     }
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    setCurrentUser(null);
+    navigate("/login");
+  };
+
+  const handleDetail = (taskId) => {
+    navigate(`/tasks/${taskId}`);
+  };
+
   const indexOfLastTask = currentPage * tasksPerPage;
   const indexOfFirstTask = indexOfLastTask - tasksPerPage;
   const currentTasks = filteredTasks.slice(indexOfFirstTask, indexOfLastTask);
@@ -150,73 +157,18 @@ const DashboardPage = () => {
     "All",
     "Assigned to Me",
     "Created by Me",
-    "Overdue",
-    "Completed",
+    "COMPLETED",
   ];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 text-gray-900">
       <div className="flex flex-col h-screen">
         {/* Top Navigation */}
-        <nav className="bg-white border-b border-gray-200 shadow-sm">
-          <div className="px-4 sm:px-6 lg:px-8">
-            <div className="flex justify-between items-center h-16">
-              {/* Left side */}
-              <div className="flex items-center">
-                <button
-                  onClick={() => setShowMobileSidebar(!showMobileSidebar)}
-                  className="md:hidden p-2 rounded-md text-gray-600 hover:bg-gray-100"
-                >
-                  <Filter className="h-5 w-5" />
-                </button>
-                <div className="flex items-center ml-2 md:ml-0">
-                  <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-                    <span className="text-white font-bold text-sm">TC</span>
-                  </div>
-                  <span className="ml-2 text-xl font-semibold hidden md:inline">
-                    TodoChimp
-                  </span>
-                </div>
-              </div>
-
-              {/* Right side */}
-              <div className="flex items-center space-x-3">
-                <button className="relative p-2 rounded-md text-gray-600 hover:bg-gray-100">
-                  <Bell className="h-5 w-5" />
-                  <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
-                </button>
-
-                <div className="relative">
-                  <button
-                    onClick={() => setShowUserMenu(!showUserMenu)}
-                    className="flex items-center space-x-2 p-2 rounded-md text-gray-600 hover:bg-gray-100"
-                  >
-                    <User className="h-5 w-5" />
-                    <ChevronDown className="h-4 w-4" />
-                  </button>
-                  {showUserMenu && (
-                    <div className="absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 z-10 border bg-white border-gray-200 text-gray-700">
-                      <Link
-                        to="/profile"
-                        className="block px-4 py-2 text-sm hover:bg-gray-100"
-                      >
-                        Profile
-                      </Link>
-
-                      <Link
-                        to="/login"
-                        className="block px-4 py-2 text-sm flex items-center hover:bg-gray-100"
-                      >
-                        <LogOut className="inline h-4 w-4 mr-2" />
-                        Logout
-                      </Link>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
-        </nav>
+        <TopNavBar
+          handleLogout={handleLogout}
+          showMobileSidebar={showMobileSidebar}
+          setShowMobileSidebar={setShowMobileSidebar}
+        />
 
         {/* Sidebar + Main Content */}
         <div className="flex flex-1 overflow-hidden">
@@ -235,7 +187,7 @@ const DashboardPage = () => {
               </div>
 
               <nav className="flex-1 p-4 space-y-2">
-                <h3 className="text-xs font-semibold uppercase tracking-wider mb-3 text-gray-500">
+                <h3 className="text-xs font-semibold uppercase tracking-wider mb-3 text-black">
                   Filters
                 </h3>
                 {filters.map((filter) => (
@@ -245,19 +197,12 @@ const DashboardPage = () => {
                     className={`w-full text-left px-3 py-2 rounded-md text-sm ${
                       selectedFilter === filter
                         ? "bg-gradient-to-br from-indigo-100 to-blue-100 text-black"
-                        : "text-gray-800 hover:bg-gray-100"
+                        : "text-black hover:bg-gray-100"
                     }`}
                   >
                     {filter}
                   </button>
                 ))}
-
-                <div className="pt-4 border-t border-gray-200">
-                  <button className="w-full text-left px-3 py-2 rounded-md text-sm flex items-center space-x-2 text-gray-800 hover:bg-gray-100">
-                    <BarChart3 className="h-4 w-4" />
-                    <span>Analytics</span>
-                  </button>
-                </div>
               </nav>
             </div>
           </aside>
@@ -370,12 +315,18 @@ const DashboardPage = () => {
                           </span>
                         </td>
                         <td className="px-6 py-3 text-center text-sm">
-                          {task.dueDate}
+                          {task.dueDate
+                            ? new Date(task.dueDate).toLocaleDateString()
+                            : "YYYY-MM-DD"}
                         </td>
                         <td className="px-6 py-3 text-center flex justify-center space-x-2">
-                          <button className="p-2 rounded-full bg-blue-50 border text-blue-600 hover:bg-blue-100">
+                          <button
+                            onClick={() => handleDetail(task.id)}
+                            className="p-2 rounded-full bg-blue-50 border text-blue-600 hover:bg-blue-100"
+                          >
                             <Eye className="h-4 w-4" />
                           </button>
+
                           <button className="p-2 rounded-full bg-yellow-50 border text-yellow-600 hover:bg-yellow-100">
                             <Edit className="h-4 w-4" />
                           </button>
@@ -411,7 +362,12 @@ const DashboardPage = () => {
                   </div>
                   <div className="text-xs sm:text-sm font-medium text-gray-600 space-y-2">
                     <p>👤 {task.assignedTo?.name || "Unassigned"}</p>
-                    <p>📅 {task.dueDate}</p>
+                    <p>
+                      📅{" "}
+                      {task.dueDate
+                        ? new Date(task.dueDate).toLocaleDateString()
+                        : "YYYY-MM-DD"}
+                    </p>
                   </div>
                   <div className="flex justify-between items-center mt-3">
                     <span
@@ -422,7 +378,10 @@ const DashboardPage = () => {
                       {task.status}
                     </span>
                     <div className="flex space-x-2">
-                      <button className="p-1.5 rounded-full bg-blue-50 border text-blue-600 hover:bg-blue-100">
+                      <button
+                        onClick={() => handleDetail(task.id)}
+                        className="p-1.5 rounded-full bg-blue-50 border text-blue-600 hover:bg-blue-100"
+                      >
                         <Eye className="h-4 w-4" />
                       </button>
                       <button className="p-1.5 rounded-full bg-yellow-50 border text-yellow-600 hover:bg-yellow-100">
@@ -436,7 +395,7 @@ const DashboardPage = () => {
                 </div>
               ))}
             </div>
-            
+
             {/* Pagination */}
             <div className="flex justify-center items-center mt-8 space-x-2">
               <button
