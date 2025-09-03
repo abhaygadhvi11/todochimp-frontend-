@@ -10,7 +10,7 @@ const API_URL = "http://localhost:3000";
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
-export default function LoginPage({ onSwitchToSignup }) {
+export default function LoginPage() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: "",

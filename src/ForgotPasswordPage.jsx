@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 
 const API_URL = "http://localhost:3000";
 
-export default function ForgotPasswordPage({ onBackToLogin }) {
+export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState("");
