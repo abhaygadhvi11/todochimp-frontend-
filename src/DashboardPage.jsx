@@ -32,7 +32,7 @@ const DashboardPage = () => {
   });
   const token = localStorage.getItem("token");
   const navigate = useNavigate();
-
+  console.log(loading);
   useEffect(() => {
     const fetchTasks = async () => {
       try {
@@ -42,7 +42,7 @@ const DashboardPage = () => {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
-          
+          cache: "no-store",
         });
 
         if (!res.ok) {
