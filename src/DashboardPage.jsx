@@ -3,16 +3,13 @@ import React, { useState, useEffect } from "react";
 import {
   Search,
   Plus,
-  BarChart3,
   Edit,
   Trash2,
   Eye,
   ChevronLeft,
-  ChevronRight,
-  Sun,
-  Moon,
+  ChevronRight
 } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import TopNavBar from "./components/TopNavBar";
 
 const DashboardPage = () => {
@@ -62,7 +59,7 @@ const DashboardPage = () => {
     };
 
     fetchTasks();
-  }, []);
+  }, [token, currentUser]);
 
   useEffect(() => {
     let filtered = [...tasks];
