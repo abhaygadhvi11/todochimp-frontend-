@@ -32,7 +32,7 @@ const DashboardPage = () => {
   });
   const token = localStorage.getItem("token");
   const navigate = useNavigate();
-  console.log(loading);
+  console.log("loading",loading);
   useEffect(() => {
     const fetchTasks = async () => {
       try {
