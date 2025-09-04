@@ -12,7 +12,7 @@ import { Link, useNavigate } from "react-router-dom";
 
 const API_URL = "http://localhost:3000";
 
-export default function SignupPage({ onSwitchToLogin }) {
+export default function SignupPage() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: "",
