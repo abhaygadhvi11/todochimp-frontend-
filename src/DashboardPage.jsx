@@ -22,7 +22,7 @@ const DashboardPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("title");
   const [sortOrder, setSortOrder] = useState("asc");
-  const [setLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [tasksPerPage] = useState(10);
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);
@@ -62,7 +62,7 @@ const DashboardPage = () => {
     };
 
     fetchTasks();
-  });
+  }, []);
 
   useEffect(() => {
     let filtered = [...tasks];
