@@ -7,7 +7,7 @@ import {
   Trash2,
   Eye,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import TopNavBar from "./components/TopNavBar";
@@ -21,7 +21,7 @@ const DashboardPage = () => {
   const [sortOrder, setSortOrder] = useState("asc");
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
-  const [tasksPerPage] = useState(10);
+  const [tasksPerPage] = useState(20);
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);
   const [currentUser, setCurrentUser] = useState(() => {
     const storedUser = localStorage.getItem("user");
@@ -29,7 +29,7 @@ const DashboardPage = () => {
   });
   const token = localStorage.getItem("token");
   const navigate = useNavigate();
-  console.log("loading",loading);
+  console.log("loading", loading);
   useEffect(() => {
     const fetchTasks = async () => {
       try {
@@ -61,6 +61,30 @@ const DashboardPage = () => {
     fetchTasks();
   }, [token, currentUser]);
 
+  const handleDelete = async (taskId) => {
+    if (!window.confirm("Are you sure you want to delete this task?")) return;
+
+    try {
+      const res = await fetch(`http://localhost:3000/api/tasks/${taskId}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        cache: "no-store"
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) throw new Error(data.error || "Failed to delete task");
+      setTasks((prevTasks) => prevTasks.filter((task) => task.id !== taskId));
+      alert("Task deleted successfully!");
+    } catch (error) {
+      console.error("Delete error:", error);
+      alert(error.message);
+    }
+  };
+
   useEffect(() => {
     let filtered = [...tasks];
 
@@ -74,7 +98,7 @@ const DashboardPage = () => {
           (task) => task.createdById === currentUser.id
         );
       } else {
-        filtered = filtered.filter((task) => task.status === selectedFilter);
+        filtered = filtered.filter((task) => task.status === selectedFilter.toUpperCase());
       }
     }
 
@@ -145,17 +169,15 @@ const DashboardPage = () => {
     navigate(`/tasks/${taskId}`);
   };
 
+  const handleCreate = () => navigate("/tasks/create");
+  const handleEdit = (taskId) => navigate(`/tasks/${taskId}/edit`);
+
   const indexOfLastTask = currentPage * tasksPerPage;
   const indexOfFirstTask = indexOfLastTask - tasksPerPage;
   const currentTasks = filteredTasks.slice(indexOfFirstTask, indexOfLastTask);
   const totalPages = Math.ceil(filteredTasks.length / tasksPerPage);
 
-  const filters = [
-    "All",
-    "Assigned to Me",
-    "Created by Me",
-    "COMPLETED",
-  ];
+  const filters = ["All", "Assigned to Me", "Created by Me", "Completed"];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 text-gray-900">
@@ -177,7 +199,10 @@ const DashboardPage = () => {
           >
             <div className="flex flex-col h-full pt-16 md:pt-0">
               <div className="p-4 border-b border-gray-200">
-                <button className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-4 py-2 rounded-md flex items-center justify-center space-x-2">
+                <button
+                  onClick={handleCreate}
+                  className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-4 py-2 rounded-md flex items-center justify-center space-x-2"
+                >
                   <Plus className="h-4 w-4" />
                   <span>Create Task</span>
                 </button>
@@ -324,10 +349,15 @@ const DashboardPage = () => {
                             <Eye className="h-4 w-4" />
                           </button>
 
-                          <button className="p-2 rounded-full bg-yellow-50 border text-yellow-600 hover:bg-yellow-100">
+                          <button
+                            onClick={() => handleEdit(task.id)}
+                            className="p-2 rounded-full bg-yellow-50 border text-yellow-600 hover:bg-yellow-100"
+                          >
                             <Edit className="h-4 w-4" />
                           </button>
-                          <button className="p-2 rounded-full bg-red-50 border text-red-600 hover:bg-red-100">
+                          <button 
+                            onClick={() => handleDelete(task.id)}
+                            className="p-2 rounded-full bg-red-50 border text-red-600 hover:bg-red-100">
                             <Trash2 className="h-4 w-4" />
                           </button>
                         </td>
@@ -379,12 +409,17 @@ const DashboardPage = () => {
                         onClick={() => handleDetail(task.id)}
                         className="p-1.5 rounded-full bg-blue-50 border text-blue-600 hover:bg-blue-100"
                       >
-                        <Eye className="h-4 w-4" />
+                        <Eye className="h-4 w-4" /> 
                       </button>
-                      <button className="p-1.5 rounded-full bg-yellow-50 border text-yellow-600 hover:bg-yellow-100">
+                      <button
+                        onClick={() => handleEdit(task.id)}
+                        className="p-1.5 rounded-full bg-yellow-50 border text-yellow-600 hover:bg-yellow-100"
+                      >
                         <Edit className="h-4 w-4" />
                       </button>
-                      <button className="p-1.5 rounded-full bg-red-50 border text-red-600 hover:bg-red-100">
+                      <button 
+                        onClick={() => handleDelete(task.id)}
+                        className="p-1.5 rounded-full bg-red-50 border text-red-600 hover:bg-red-100">
                         <Trash2 className="h-4 w-4" />
                       </button>
                     </div>
