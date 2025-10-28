@@ -389,6 +389,10 @@ const TaskFormPage = ({ mode }) => {
       const result = await res.json();
       const savedTask = result.data;
 
+      setShowSuccess(true);
+      setIsDirty(false);
+      setTimeout(() => setShowSuccess(false), 4000);
+
       if (isEdit && taskId) {
         const newAssignments = raciAssignments.filter((a) => !a.id && a.email);
 
@@ -412,8 +416,6 @@ const TaskFormPage = ({ mode }) => {
             } else {
               const raciData = await raciRes.json();
               console.log("RACI assignments created:", raciData);
-
-              // Optionally refresh latest RACI data from backend
               await fetchTaskData();
             }
           } catch (err) {
@@ -426,17 +428,13 @@ const TaskFormPage = ({ mode }) => {
         setRaciAssignments(savedTask.raciAssignments);
       }
 
-      setShowSuccess(true);
-      setIsDirty(false);
       if (!isEdit) resetForm();
     } catch (error) {
       console.error("Save error:", error);
     } finally {
       setSaveLoading(false);
-      setTimeout(() => setShowSuccess(false), 4000);
     }
   };
-
 
   const handleCancel = () => {
     if (isDirty) {
@@ -538,17 +536,14 @@ const TaskFormPage = ({ mode }) => {
 
               {/* Success Message */}
               {showSuccess && (
-                <div className="mx-6 mt-4 p-4 bg-green-50 border border-green-200 rounded-lg flex items-center animate-fade-in">
+                <div
+                  className="fixed bottom-6 left-6 z-50 p-4 bg-green-50 border border-green-200 
+                            rounded-lg flex items-center shadow-lg animate-fade-in"
+                >
                   <Check className="w-5 h-5 text-green-600 mr-3" />
-                  <div>
-                    <span className="text-green-800 font-medium">
-                      Task saved successfully!
-                    </span>
-                    <p className="text-green-700 text-sm mt-1">
-                      Your task has been {isEdit ? "updated" : "created"} and is
-                      ready for assignment.
-                    </p>
-                  </div>
+                  <p className="text-green-700 text-sm">
+                    Your task has been {isEdit ? "updated" : "created"} successfully.
+                  </p>
                 </div>
               )}
 
