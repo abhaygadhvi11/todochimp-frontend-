@@ -90,7 +90,7 @@ export default function SignupPage() {
           token: data.data.token,
         };
 
-        navigate("/dashboard");
+        navigate("/login");
         console.log("User registered:", userData);
       } else {
         if (data.errors) {

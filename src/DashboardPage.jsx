@@ -341,25 +341,44 @@ const DashboardPage = () => {
                             ? new Date(task.dueDate).toLocaleDateString()
                             : "YYYY-MM-DD"}
                         </td>
-                        <td className="px-6 py-3 text-center flex justify-center space-x-2">
-                          <button
-                            onClick={() => handleDetail(task.id)}
-                            className="p-2 rounded-full bg-blue-50 border text-blue-600 hover:bg-blue-100"
-                          >
-                            <Eye className="h-4 w-4" />
-                          </button>
+                        <td className="px-6 py-3 text-center">
+                          <div className="inline-flex justify-center space-x-2">
+                            <div className="relative group">
+                              <button
+                                onClick={() => handleDetail(task.id)}
+                                className="p-2 rounded-full bg-blue-50 border text-blue-600 hover:bg-blue-100 transition-colors"
+                              >
+                                <Eye className="h-4 w-4" />
+                              </button>
+                              <span className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 text-xs text-white bg-gray-900 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none z-20">
+                                View Details
+                              </span>
+                            </div>
 
-                          <button
-                            onClick={() => handleEdit(task.id)}
-                            className="p-2 rounded-full bg-yellow-50 border text-yellow-600 hover:bg-yellow-100"
-                          >
-                            <Edit className="h-4 w-4" />
-                          </button>
-                          <button 
-                            onClick={() => handleDelete(task.id)}
-                            className="p-2 rounded-full bg-red-50 border text-red-600 hover:bg-red-100">
-                            <Trash2 className="h-4 w-4" />
-                          </button>
+                            <div className="relative group">
+                              <button
+                                onClick={() => handleEdit(task.id)}
+                                className="p-2 rounded-full bg-yellow-50 border text-yellow-600 hover:bg-yellow-100 transition-colors"
+                              >
+                                <Edit className="h-4 w-4" />
+                              </button>
+                              <span className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 text-xs text-white bg-gray-900 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none z-20">
+                                Edit Task
+                              </span>
+                            </div>
+
+                            <div className="relative group">
+                              <button 
+                                onClick={() => handleDelete(task.id)}
+                                className="p-2 rounded-full bg-red-50 border text-red-600 hover:bg-red-100 transition-colors"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </button>
+                              <span className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 text-xs text-white bg-gray-900 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none z-20">
+                                Delete Task
+                              </span>
+                            </div>
+                          </div>
                         </td>
                       </tr>
                     ))}
@@ -405,23 +424,41 @@ const DashboardPage = () => {
                       {task.status}
                     </span>
                     <div className="flex space-x-2">
-                      <button
-                        onClick={() => handleDetail(task.id)}
-                        className="p-1.5 rounded-full bg-blue-50 border text-blue-600 hover:bg-blue-100"
-                      >
-                        <Eye className="h-4 w-4" /> 
-                      </button>
-                      <button
-                        onClick={() => handleEdit(task.id)}
-                        className="p-1.5 rounded-full bg-yellow-50 border text-yellow-600 hover:bg-yellow-100"
-                      >
-                        <Edit className="h-4 w-4" />
-                      </button>
-                      <button 
-                        onClick={() => handleDelete(task.id)}
-                        className="p-1.5 rounded-full bg-red-50 border text-red-600 hover:bg-red-100">
-                        <Trash2 className="h-4 w-4" />
-                      </button>
+                      <div className="relative group">
+                        <button
+                          onClick={() => handleDetail(task.id)}
+                          className="p-1.5 rounded-full bg-blue-50 border text-blue-600 hover:bg-blue-100 transition-colors"
+                        >
+                          <Eye className="h-4 w-4" /> 
+                        </button>
+                        <span className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 text-xs text-white bg-gray-900 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none z-20">
+                          View Details
+                        </span>
+                      </div>
+
+                      <div className="relative group">
+                        <button
+                          onClick={() => handleEdit(task.id)}
+                          className="p-1.5 rounded-full bg-yellow-50 border text-yellow-600 hover:bg-yellow-100 transition-colors"
+                        >
+                          <Edit className="h-4 w-4" />
+                        </button>
+                        <span className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 text-xs text-white bg-gray-900 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none z-20">
+                          Edit Task
+                        </span>
+                      </div>
+
+                      <div className="relative group">
+                        <button 
+                          onClick={() => handleDelete(task.id)}
+                          className="p-1.5 rounded-full bg-red-50 border text-red-600 hover:bg-red-100 transition-colors"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                        <span className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 text-xs text-white bg-gray-900 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none z-20">
+                          Delete Task
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </div>
