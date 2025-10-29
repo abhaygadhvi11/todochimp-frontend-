@@ -14,6 +14,7 @@ import {
   Trash2,
   Mail,
   Users,
+  RotateCcw,
 } from "lucide-react";
 import { useParams } from "react-router-dom";
 
@@ -29,7 +30,7 @@ const TaskFormPage = ({ mode }) => {
     status: "PENDING",
   });
   const [raciAssignments, setRaciAssignments] = useState([
-    { email: "", raciRole: "RESPONSIBLE" },
+    { email: "", raciRole: "" },
   ]);
   const [errors, setErrors] = useState({});
   const [raciErrors, setRaciErrors] = useState([]);
@@ -39,6 +40,7 @@ const TaskFormPage = ({ mode }) => {
   const [isLoading, setSaveLoading] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
   const [originalTask, setOriginalTask] = useState(null);
+  const [showRaciSnackbar, setShowRaciSnackbar] = useState(false);
   const token = localStorage.getItem("token"); // Replace with actual token from localStorage
   const isAssigneeOnly =
     originalTask &&
@@ -188,6 +190,10 @@ const TaskFormPage = ({ mode }) => {
 
         const result = await res.json();
         console.log("✅ RACI role updated:", result);
+
+        // Show success snackbar
+        setShowRaciSnackbar(true);
+        setTimeout(() => setShowRaciSnackbar(false), 3000);
       } catch (error) {
         console.error("Error updating RACI role:", error);
         alert("Failed to update RACI role. Please try again.");
@@ -196,10 +202,7 @@ const TaskFormPage = ({ mode }) => {
   };
 
   const addRaciAssignment = () => {
-    setRaciAssignments([
-      ...raciAssignments,
-      { email: "", raciRole: "RESPONSIBLE" },
-    ]);
+    setRaciAssignments([...raciAssignments, { email: "", raciRole: "" }]);
     setRaciErrors([...raciErrors, {}]);
   };
 
@@ -351,8 +354,7 @@ const TaskFormPage = ({ mode }) => {
             createdById: currentUser.id,
           };
         }
-      } 
-      else {
+      } else {
         payload = {
           title: formData.title,
           description: formData.description || undefined,
@@ -542,7 +544,8 @@ const TaskFormPage = ({ mode }) => {
                 >
                   <Check className="w-5 h-5 text-green-600 mr-3" />
                   <p className="text-green-700 text-sm">
-                    Your task has been {isEdit ? "updated" : "created"} successfully.
+                    Your task has been {isEdit ? "updated" : "created"}{" "}
+                    successfully.
                   </p>
                 </div>
               )}
@@ -975,7 +978,7 @@ const TaskFormPage = ({ mode }) => {
                               )}
                             </div>
 
-                            {/* Email Section - Full Width */}
+                            {/* Email Section */}
                             <div className="mb-6">
                               <label className="block text-sm font-medium text-gray-700 mb-2">
                                 Email Address
@@ -1014,12 +1017,30 @@ const TaskFormPage = ({ mode }) => {
                               )}
                             </div>
 
-                            {/* RACI Roles Section - 4 Column Grid */}
+                            {/* RACI Roles Section */}
                             <div>
-                              <label className="block text-sm font-medium text-gray-700 mb-3">
-                                RACI Roles
-                                <span className="text-red-500 ml-1">*</span>
-                              </label>
+                              <div className="flex items-center justify-between mb-3">
+                                <label className="block text-sm font-medium text-gray-700">
+                                  RACI Roles
+                                  <span className="text-red-500 ml-1">*</span>
+                                </label>
+
+                                {/* Reset button added */}
+                                {!isEdit && assignment.raciRole && (
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      handleRaciChange(index, "raciRole", null);
+                                      handleRaciChange(index, "email", "");
+                                    }}
+                                    className="text-xs text-blue-600 hover:text-blue-800 font-medium flex items-center gap-1 transition-colors"
+                                  >
+                                    <RotateCcw className="w-3.5 h-3.5" />
+                                    Reset
+                                  </button>
+                                )}
+                              </div>
+
                               <div
                                 className={`grid grid-cols-2 md:grid-cols-4 gap-3 ${
                                   isAssigneeOnly
@@ -1031,7 +1052,7 @@ const TaskFormPage = ({ mode }) => {
                                   <label
                                     key={role.value}
                                     className={`flex items-center gap-2 p-3 border rounded-lg cursor-pointer transition-all ${
-                                      assignment.raciRole?.includes(role.value)
+                                      assignment.raciRole === role.value
                                         ? "border-blue-500 bg-blue-50 shadow-sm"
                                         : "border-gray-200 bg-white hover:border-gray-300 hover:bg-gray-50"
                                     } ${
@@ -1042,21 +1063,22 @@ const TaskFormPage = ({ mode }) => {
                                   >
                                     <input
                                       type="radio"
-                                      name={`raciRole-${index}`} // group radios by assignment
+                                      name={`raciRole-${index}`}
                                       value={role.value}
                                       checked={
                                         assignment.raciRole === role.value
                                       }
-                                      onChange={(e) =>
+                                      onChange={() =>
                                         handleRaciChange(
                                           index,
                                           "raciRole",
-                                          e.target.value
+                                          assignment.raciRole === role.value
+                                            ? null
+                                            : role.value
                                         )
                                       }
                                       disabled={isAssigneeOnly}
                                     />
-
                                     <span className="text-sm font-medium text-gray-900">
                                       {role.label}
                                     </span>
@@ -1071,36 +1093,34 @@ const TaskFormPage = ({ mode }) => {
                                 </div>
                               )}
 
-                              {assignment.raciRole &&
-                                (Array.isArray(assignment.raciRole)
-                                  ? assignment.raciRole
-                                  : [assignment.raciRole]
-                                ).length > 0 && (
-                                  <div className="mt-4 pt-4 border-t border-gray-200">
-                                    <p className="text-xs font-medium text-gray-600 mb-2">
-                                      Selected Roles:
-                                    </p>
-                                    <div className="flex flex-wrap gap-2">
-                                      {(Array.isArray(assignment.raciRole)
-                                        ? assignment.raciRole
-                                        : [assignment.raciRole]
-                                      ).map((role) => (
-                                        <div
-                                          key={role}
-                                          className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold border shadow-sm ${getRaciRoleColor(
-                                            role
-                                          )}`}
-                                        >
-                                          {role}
-                                        </div>
-                                      ))}
+                              {assignment.raciRole && (
+                                <div className="mt-4 pt-4 border-t border-gray-200">
+                                  <p className="text-xs font-medium text-gray-600 mb-2">
+                                    Selected Role:
+                                  </p>
+                                  <div className="flex flex-wrap gap-2">
+                                    <div
+                                      className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold border shadow-sm ${getRaciRoleColor(
+                                        assignment.raciRole
+                                      )}`}
+                                    >
+                                      {assignment.raciRole}
                                     </div>
                                   </div>
-                                )}
+                                </div>
+                              )}
                             </div>
                           </div>
                         </div>
                       ))}
+                    </div>
+                  )}
+                  {showRaciSnackbar && (
+                    <div className="fixed bottom-6 left-6 flex items-center gap-2 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg shadow-lg animate-fade-in">
+                      <Check className="w-5 h-5 text-green-600" />
+                      <p className="text-sm font-medium">
+                        RACI Role updated successfully.
+                      </p>
                     </div>
                   )}
                 </div>
