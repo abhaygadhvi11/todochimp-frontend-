@@ -5,7 +5,7 @@ import {
   Plus,
   Edit,
   Trash2,
-  Eye,
+  Eye,User, Calendar,
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
@@ -187,6 +187,7 @@ const DashboardPage = () => {
           handleLogout={handleLogout}
           showMobileSidebar={showMobileSidebar}
           setShowMobileSidebar={setShowMobileSidebar}
+          user={currentUser}
         />
 
         {/* Sidebar + Main Content */}
@@ -245,7 +246,7 @@ const DashboardPage = () => {
                 <Search className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
                 <input
                   type="text"
-                  placeholder="Search tasks..."
+                  placeholder="Search Tasks..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="w-full pl-10 pr-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm bg-white border-gray-300"
@@ -278,8 +279,8 @@ const DashboardPage = () => {
               </div>
             </div>
 
-            {/* Table (Desktop) */}
-            <div className="hidden md:block overflow-x-auto mt-6">
+            {/* Table (Desktop) - Shows at 1280px and above */}
+            <div className="hidden xl:block overflow-x-auto mt-6">
               <div className="shadow-lg rounded-xl border overflow-hidden bg-white border-gray-200">
                 <table className="min-w-full border-collapse">
                   <thead className="bg-gradient-to-r from-blue-700 to-purple-600 text-white sticky top-0 z-10">
@@ -339,7 +340,7 @@ const DashboardPage = () => {
                         <td className="px-6 py-3 text-center text-sm">
                           {task.dueDate
                             ? new Date(task.dueDate).toLocaleDateString()
-                            : "YYYY-MM-DD"}
+                            : "DD/MM/YYYY"}
                         </td>
                         <td className="px-6 py-3 text-center">
                           <div className="inline-flex justify-center space-x-2">
@@ -387,8 +388,8 @@ const DashboardPage = () => {
               </div>
             </div>
 
-            {/* Mobile Card View */}
-            <div className="space-y-4 md:hidden mt-6">
+            {/* Mobile Card View - Shows below 1280px */}
+            <div className="space-y-4 xl:hidden mt-6">
               {currentTasks.map((task) => (
                 <div
                   key={task.id}
@@ -407,13 +408,19 @@ const DashboardPage = () => {
                     </span>
                   </div>
                   <div className="text-xs sm:text-sm font-medium text-gray-600 space-y-2">
-                    <p>👤 {task.assignedTo?.name || "Unassigned"}</p>
-                    <p>
-                      📅{" "}
-                      {task.dueDate
-                        ? new Date(task.dueDate).toLocaleDateString()
-                        : "YYYY-MM-DD"}
-                    </p>
+                    <div className="flex items-center gap-2">
+                      <User className="w-4 h-4 text-gray-500" />
+                      <span>{task.assignedTo?.name || "Unassigned"}</span>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <Calendar className="w-4 h-4 text-black-500" />
+                      <span>
+                        {task.dueDate
+                          ? new Date(task.dueDate).toLocaleDateString()
+                          : "DD/MM/YYYY"}
+                      </span>
+                    </div>
                   </div>
                   <div className="flex justify-between items-center mt-3">
                     <span

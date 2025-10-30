@@ -921,7 +921,7 @@ const TaskFormPage = ({ mode }) => {
                         <h3 className="text-lg font-semibold text-gray-900">
                           RACI Assignments
                         </h3>
-                        <p className="text-xs text-gray-500 mt-0.5">
+                        <p className="hidden sm:block text-xs text-gray-500 mt-0.5">
                           Assign roles and responsibilities to team members
                         </p>
                       </div>
@@ -930,19 +930,18 @@ const TaskFormPage = ({ mode }) => {
                       type="button"
                       onClick={addRaciAssignment}
                       disabled={isAssigneeOnly}
-                      className="flex items-center gap-2 px-4 py-2 text-sm text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 disabled:bg-gray-300 disabled:cursor-not-allowed font-medium rounded-lg transition-colors shadow-sm"
+                      className="flex items-center justify-center gap-2 px-2 py-2 sm:px-4 sm:py-2 text-sm text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 disabled:bg-gray-300 disabled:cursor-not-allowed font-medium rounded-lg transition-colors shadow-sm"
                     >
                       <Plus className="w-4 h-4" />
-                      Add Assignment
+                      {/* Hide text on mobile */}
+                      <span className="hidden sm:inline">Add Assignment</span>
                     </button>
                   </div>
 
                   {raciAssignments.length === 0 ? (
                     <div className="text-center py-12 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
                       <Users className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-                      <p className="text-gray-600 font-medium">
-                        No RACI roles assigned yet
-                      </p>
+                      <p className="text-gray-600 font-medium">No RACI roles assigned yet</p>
                       <p className="text-gray-500 text-sm mt-1">
                         Click "Add Assignment" to get started
                       </p>
@@ -954,7 +953,7 @@ const TaskFormPage = ({ mode }) => {
                           key={index}
                           className="bg-gradient-to-br from-gray-50 to-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-shadow"
                         >
-                          <div className="p-5">
+                          <div className="p-4 sm:p-5">
                             <div className="flex items-center justify-between mb-4">
                               <div className="flex items-center gap-2">
                                 <span className="flex items-center justify-center w-6 h-6 rounded-full bg-blue-100 text-blue-700 text-xs font-semibold">
@@ -964,16 +963,18 @@ const TaskFormPage = ({ mode }) => {
                                   Assignment #{index + 1}
                                 </span>
                               </div>
+
                               {(isEdit || raciAssignments.length > 1) && (
                                 <button
                                   type="button"
                                   onClick={() => removeRaciAssignment(index)}
                                   disabled={isAssigneeOnly}
-                                  className="flex items-center gap-1 px-3 py-1.5 text-xs text-red-600 hover:text-white hover:bg-red-600 disabled:opacity-50 disabled:cursor-not-allowed font-medium rounded-md border border-red-200 hover:border-red-600 transition-colors"
                                   title="Remove assignment"
+                                  className="flex items-center justify-center gap-1 px-2 py-1 sm:px-3 sm:py-1.5 text-xs text-red-600 hover:text-white hover:bg-red-600 disabled:opacity-50 disabled:cursor-not-allowed font-medium rounded-md border border-red-200 hover:border-red-600 transition-colors"
                                 >
                                   <Trash2 className="w-3.5 h-3.5" />
-                                  Remove
+                                  {/* Hide text on mobile */}
+                                  <span className="hidden sm:inline">Remove</span>
                                 </button>
                               )}
                             </div>
@@ -989,11 +990,7 @@ const TaskFormPage = ({ mode }) => {
                                   type="email"
                                   value={assignment.email}
                                   onChange={(e) =>
-                                    handleRaciChange(
-                                      index,
-                                      "email",
-                                      e.target.value
-                                    )
+                                    handleRaciChange(index, "email", e.target.value)
                                   }
                                   disabled={isAssigneeOnly}
                                   placeholder="example@company.com"
@@ -1002,9 +999,7 @@ const TaskFormPage = ({ mode }) => {
                                       ? "border-red-300 bg-red-50"
                                       : "border-gray-300 bg-white"
                                   } ${
-                                    isAssigneeOnly
-                                      ? "bg-gray-100 cursor-not-allowed"
-                                      : ""
+                                    isAssigneeOnly ? "bg-gray-100 cursor-not-allowed" : ""
                                   }`}
                                 />
                                 <Mail className="w-4 h-4 text-gray-400 absolute left-3 top-3" />
@@ -1025,7 +1020,6 @@ const TaskFormPage = ({ mode }) => {
                                   <span className="text-red-500 ml-1">*</span>
                                 </label>
 
-                                {/* Reset button added */}
                                 {!isEdit && assignment.raciRole && (
                                   <button
                                     type="button"
@@ -1036,16 +1030,14 @@ const TaskFormPage = ({ mode }) => {
                                     className="text-xs text-blue-600 hover:text-blue-800 font-medium flex items-center gap-1 transition-colors"
                                   >
                                     <RotateCcw className="w-3.5 h-3.5" />
-                                    Reset
+                                    <span className="hidden sm:inline">Reset</span>
                                   </button>
                                 )}
                               </div>
 
                               <div
                                 className={`grid grid-cols-2 md:grid-cols-4 gap-3 ${
-                                  isAssigneeOnly
-                                    ? "opacity-50 cursor-not-allowed"
-                                    : ""
+                                  isAssigneeOnly ? "opacity-50 cursor-not-allowed" : ""
                                 }`}
                               >
                                 {raciRoles.map((role) => (
@@ -1055,19 +1047,13 @@ const TaskFormPage = ({ mode }) => {
                                       assignment.raciRole === role.value
                                         ? "border-blue-500 bg-blue-50 shadow-sm"
                                         : "border-gray-200 bg-white hover:border-gray-300 hover:bg-gray-50"
-                                    } ${
-                                      isAssigneeOnly
-                                        ? "pointer-events-none"
-                                        : ""
-                                    }`}
+                                    } ${isAssigneeOnly ? "pointer-events-none" : ""}`}
                                   >
                                     <input
                                       type="radio"
                                       name={`raciRole-${index}`}
                                       value={role.value}
-                                      checked={
-                                        assignment.raciRole === role.value
-                                      }
+                                      checked={assignment.raciRole === role.value}
                                       onChange={() =>
                                         handleRaciChange(
                                           index,
@@ -1115,12 +1101,11 @@ const TaskFormPage = ({ mode }) => {
                       ))}
                     </div>
                   )}
+
                   {showRaciSnackbar && (
                     <div className="fixed bottom-6 left-6 flex items-center gap-2 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg shadow-lg animate-fade-in">
                       <Check className="w-5 h-5 text-green-600" />
-                      <p className="text-sm font-medium">
-                        RACI Role updated successfully.
-                      </p>
+                      <p className="text-sm font-medium">RACI Role updated successfully.</p>
                     </div>
                   )}
                 </div>
