@@ -941,7 +941,9 @@ const TaskFormPage = ({ mode }) => {
                   {raciAssignments.length === 0 ? (
                     <div className="text-center py-12 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
                       <Users className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-                      <p className="text-gray-600 font-medium">No RACI roles assigned yet</p>
+                      <p className="text-gray-600 font-medium">
+                        No RACI roles assigned yet
+                      </p>
                       <p className="text-gray-500 text-sm mt-1">
                         Click "Add Assignment" to get started
                       </p>
@@ -974,7 +976,9 @@ const TaskFormPage = ({ mode }) => {
                                 >
                                   <Trash2 className="w-3.5 h-3.5" />
                                   {/* Hide text on mobile */}
-                                  <span className="hidden sm:inline">Remove</span>
+                                  <span className="hidden sm:inline">
+                                    Remove
+                                  </span>
                                 </button>
                               )}
                             </div>
@@ -990,7 +994,11 @@ const TaskFormPage = ({ mode }) => {
                                   type="email"
                                   value={assignment.email}
                                   onChange={(e) =>
-                                    handleRaciChange(index, "email", e.target.value)
+                                    handleRaciChange(
+                                      index,
+                                      "email",
+                                      e.target.value
+                                    )
                                   }
                                   disabled={isAssigneeOnly}
                                   placeholder="example@company.com"
@@ -999,7 +1007,9 @@ const TaskFormPage = ({ mode }) => {
                                       ? "border-red-300 bg-red-50"
                                       : "border-gray-300 bg-white"
                                   } ${
-                                    isAssigneeOnly ? "bg-gray-100 cursor-not-allowed" : ""
+                                    isAssigneeOnly
+                                      ? "bg-gray-100 cursor-not-allowed"
+                                      : ""
                                   }`}
                                 />
                                 <Mail className="w-4 h-4 text-gray-400 absolute left-3 top-3" />
@@ -1030,16 +1040,14 @@ const TaskFormPage = ({ mode }) => {
                                     className="text-xs text-blue-600 hover:text-blue-800 font-medium flex items-center gap-1 transition-colors"
                                   >
                                     <RotateCcw className="w-3.5 h-3.5" />
-                                    <span className="hidden sm:inline">Reset</span>
+                                    <span className="hidden sm:inline">
+                                      Reset
+                                    </span>
                                   </button>
                                 )}
                               </div>
 
-                              <div
-                                className={`grid grid-cols-2 md:grid-cols-4 gap-3 ${
-                                  isAssigneeOnly ? "opacity-50 cursor-not-allowed" : ""
-                                }`}
-                              >
+                              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                                 {raciRoles.map((role) => (
                                   <label
                                     key={role.value}
@@ -1047,13 +1055,19 @@ const TaskFormPage = ({ mode }) => {
                                       assignment.raciRole === role.value
                                         ? "border-blue-500 bg-blue-50 shadow-sm"
                                         : "border-gray-200 bg-white hover:border-gray-300 hover:bg-gray-50"
-                                    } ${isAssigneeOnly ? "pointer-events-none" : ""}`}
+                                    } ${
+                                      isAssigneeOnly
+                                        ? "pointer-events-none"
+                                        : ""
+                                    }`}
                                   >
                                     <input
                                       type="radio"
                                       name={`raciRole-${index}`}
                                       value={role.value}
-                                      checked={assignment.raciRole === role.value}
+                                      checked={
+                                        assignment.raciRole === role.value
+                                      }
                                       onChange={() =>
                                         handleRaciChange(
                                           index,
@@ -1105,7 +1119,9 @@ const TaskFormPage = ({ mode }) => {
                   {showRaciSnackbar && (
                     <div className="fixed bottom-6 left-6 flex items-center gap-2 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg shadow-lg animate-fade-in">
                       <Check className="w-5 h-5 text-green-600" />
-                      <p className="text-sm font-medium">RACI Role updated successfully.</p>
+                      <p className="text-sm font-medium">
+                        RACI Role updated successfully.
+                      </p>
                     </div>
                   )}
                 </div>
@@ -1144,42 +1160,51 @@ const TaskFormPage = ({ mode }) => {
               </div>
 
               {/* Enhanced Action Buttons */}
-              <div className="border-t border-gray-200 px-6 py-4 bg-gray-50 rounded-b-xl flex justify-between items-center">
+              <div className="border-t border-gray-200 px-4 sm:px-6 py-3 sm:py-4 bg-gray-50 rounded-b-xl flex justify-between items-center">
+                {/* Left side */}
                 <div className="flex items-center text-sm text-gray-600">
                   {isDirty && (
                     <div className="flex items-center gap-2">
-                      <span className="flex items-center gap-1.5 text-xs font-medium text-orange-700 bg-orange-50 border border-orange-200 px-2.5 py-1 rounded">
-                        <span className="w-1.5 h-1.5 bg-orange-500 rounded-full" />
+                      {/* Orange dot always visible */}
+                      <span className="w-2 h-2 bg-orange-500 rounded-full" />
+
+                      {/* Text hidden on mobile */}
+                      <span className="hidden sm:inline text-xs font-medium text-orange-700 bg-orange-50 border border-orange-200 px-2.5 py-1 rounded">
                         Unsaved changes
                       </span>
                     </div>
                   )}
                 </div>
-
-                <div className="flex gap-3">
+                {/* Right side */}
+                <div className="flex gap-2 sm:gap-3">
+                  {/* Cancel Button — icon only on mobile */}
                   <button
                     onClick={handleCancel}
                     disabled={isLoading}
-                    className="px-5 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 transition-all"
+                    className="px-2 sm:px-5 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 transition-all"
                   >
                     <X className="w-4 h-4" />
-                    Cancel
+                    <span className="hidden sm:inline">Cancel</span>
                   </button>
+
+                  {/* Save Button */}
                   <button
                     onClick={handleSave}
                     disabled={isLoading || !formData.title.trim()}
-                    className="px-5 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-1 focus:ring-blue-600 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 transition-all"
+                    className="px-3 sm:px-5 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-1 focus:ring-blue-600 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 transition-all"
                   >
                     {isLoading ? (
                       <div className="w-4 h-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
                     ) : (
                       <Save className="w-4 h-4" />
                     )}
-                    {isLoading
-                      ? "Saving..."
-                      : isEdit
-                      ? "Update Task"
-                      : "Create Task"}
+                    <span className="">
+                      {isLoading
+                        ? "Saving..."
+                        : isEdit
+                        ? "Update Task"
+                        : "Create Task"}
+                    </span>
                   </button>
                 </div>
               </div>

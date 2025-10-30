@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { User, ChevronDown, LogOut, Filter, Mail } from "lucide-react";
+import { User, ChevronDown, LogOut, Menu, Mail } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const TopNavBar = ({
@@ -20,7 +20,7 @@ const TopNavBar = ({
               onClick={() => setShowMobileSidebar(!showMobileSidebar)}
               className="md:hidden p-2 rounded-md text-gray-600 hover:bg-gray-100"
             >
-              <Filter className="h-5 w-5" />
+              <Menu className="h-5 w-5 text-black" />
             </button>
 
             <div className="flex items-center ml-2 md:ml-0">
