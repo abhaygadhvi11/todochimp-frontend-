@@ -290,74 +290,77 @@ const TaskDetailScreen = () => {
         <main className="flex-1 overflow-auto p-4 sm:p-6">
           {/* Task Section */}
           <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-5 mb-6">
-  {/* Title & Meta */}
-  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
-    <div>
-      <h1 className="text-xl sm:text-2xl font-semibold text-gray-900">{task.title}</h1>
-      <p className="text-gray-600 mt-1">{task.description}</p>
-    </div>
-    <div className="flex flex-wrap items-center gap-2">
-      <span
-        className={`px-2.5 py-1 text-xs font-medium rounded-md border ${getStatusColor(
-          task.status
-        )}`}
-      >
-        {task.status}
-      </span>
-      <span
-        className={`px-2.5 py-1 text-xs font-medium rounded-md border ${getPriorityColor(
-          task.priority
-        )}`}
-      >
-        {task.priority}
-      </span>
-    </div>
-  </div>
+            {/* Title & Meta */}
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+              <div>
+                <h1 className="text-xl sm:text-2xl font-semibold text-gray-900">
+                  {task.title}
+                </h1>
+                <p className="text-gray-600 mt-1">{task.description}</p>
+              </div>
+              <div className="flex flex-wrap items-center gap-2">
+                <span
+                  className={`px-2.5 py-1 text-xs font-medium rounded-md border ${getStatusColor(
+                    task.status
+                  )}`}
+                >
+                  {task.status}
+                </span>
+                <span
+                  className={`px-2.5 py-1 text-xs font-medium rounded-md border ${getPriorityColor(
+                    task.priority
+                  )}`}
+                >
+                  {task.priority}
+                </span>
+              </div>
+            </div>
 
-  {/* Info Grid */}
-  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 border-t border-gray-100 pt-4">
-    <div className="flex items-center gap-3">
-      <Calendar className="w-5 h-5 text-gray-400" />
-      <div>
-        <p className="text-xs text-gray-500">Due Date</p>
-        <p className="text-sm font-medium text-gray-800">
-          {task.dueDate ? new Date(task.dueDate).toLocaleDateString() : "—"}
-        </p>
-      </div>
-    </div>
+            {/* Info Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 border-t border-gray-100 pt-4">
+              <div className="flex items-center gap-3">
+                <Calendar className="w-5 h-5 text-gray-400" />
+                <div>
+                  <p className="text-xs text-gray-500">Due Date</p>
+                  <p className="text-sm font-medium text-gray-800">
+                    {task.dueDate
+                      ? new Date(task.dueDate).toLocaleDateString()
+                      : "—"}
+                  </p>
+                </div>
+              </div>
 
-    <div className="flex items-center gap-3">
-      <User className="w-5 h-5 text-gray-400" />
-      <div>
-        <p className="text-xs text-gray-500">Assignee</p>
-        <p className="text-sm font-medium text-gray-800">
-          {task.assignedTo?.name || "Unassigned"}
-        </p>
-      </div>
-    </div>
+              <div className="flex items-center gap-3">
+                <User className="w-5 h-5 text-gray-400" />
+                <div>
+                  <p className="text-xs text-gray-500">Assignee</p>
+                  <p className="text-sm font-medium text-gray-800">
+                    {task.assignedTo?.name || "Unassigned"}
+                  </p>
+                </div>
+              </div>
 
-    <div className="flex items-center gap-3">
-      <User className="w-5 h-5 text-gray-400" />
-      <div>
-        <p className="text-xs text-gray-500">Created By</p>
-        <p className="text-sm font-medium text-gray-800">
-          {task.createdBy?.name || "—"}
-        </p>
-      </div>
-    </div>
+              <div className="flex items-center gap-3">
+                <User className="w-5 h-5 text-gray-400" />
+                <div>
+                  <p className="text-xs text-gray-500">Created By</p>
+                  <p className="text-sm font-medium text-gray-800">
+                    {task.createdBy?.name || "—"}
+                  </p>
+                </div>
+              </div>
 
-    <div className="flex items-center gap-3">
-      <Calendar className="w-5 h-5 text-gray-400" />
-      <div>
-        <p className="text-xs text-gray-500">Created On</p>
-        <p className="text-sm font-medium text-gray-800">
-          {new Date(task.createdAt).toLocaleDateString()}
-        </p>
-      </div>
-    </div>
-  </div>
-</div>
-
+              <div className="flex items-center gap-3">
+                <Calendar className="w-5 h-5 text-gray-400" />
+                <div>
+                  <p className="text-xs text-gray-500">Created On</p>
+                  <p className="text-sm font-medium text-gray-800">
+                    {new Date(task.createdAt).toLocaleDateString()}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
 
           {/* Comments & Attachments */}
           <div className="flex-1 space-y-4">
