@@ -56,7 +56,7 @@ const CommentsSection = ({ comments = [], onAddComment }) => {
                       {comment.user?.name || "Unknown"}
                     </span>
                     <span className="text-xs text-gray-400">
-                      {new Date(comment.createdAt).toLocaleString()}
+                      {new Date(comment.createdAt).toLocaleDateString()}
                     </span>
                   </div>
                   <p className="text-sm text-gray-700 mt-0.5">{comment.content}</p>
