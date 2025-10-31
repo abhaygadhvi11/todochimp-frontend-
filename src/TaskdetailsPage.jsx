@@ -7,6 +7,7 @@ import {
   Bell,
   ChevronDown,
   LogOut,
+  Mail,
 } from "lucide-react";
 import AttachmentsSection from "./components/AttachmentsSection";
 import CommentsSection from "./components/CommentsSection";
@@ -21,6 +22,7 @@ const TaskDetailScreen = () => {
   const [comments, setComments] = useState([]);
   const [attachments, setAttachments] = useState([]);
 
+  // ✅ use currentUser instead of user
   const [currentUser, setCurrentUser] = useState(() => {
     const storedUser = localStorage.getItem("user");
     return storedUser ? JSON.parse(storedUser) : null;
@@ -45,14 +47,14 @@ const TaskDetailScreen = () => {
 
       if (!res.ok) throw new Error("Upload failed");
 
-      await attachmentsres();
+      await fetchAttachments();
     } catch (err) {
       console.error("Error uploading attachment:", err);
       alert("Failed to upload attachment.");
     }
   };
 
-  const attachmentsres = async () => {
+  const fetchAttachments = async () => {
     try {
       const attachmentRes = await fetch(
         `http://localhost:3000/api/tasks/${taskId}/attachments`,
@@ -65,11 +67,10 @@ const TaskDetailScreen = () => {
         }
       );
 
-      if (!attachmentRes.ok) throw new Error("Failed to fetch Attachments");
+      if (!attachmentRes.ok) throw new Error("Failed to fetch attachments");
 
       const attachmentData = await attachmentRes.json();
       setAttachments(attachmentData.attachments);
-      console.log(attachmentData);
     } catch (err) {
       console.error(err);
     }
@@ -87,22 +88,20 @@ const TaskDetailScreen = () => {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({
-            content: commentText,
-          }),
+          body: JSON.stringify({ content: commentText }),
         }
       );
 
       if (!res.ok) throw new Error("Failed to post comment");
 
-      await commentsRes(); 
+      await fetchComments();
     } catch (err) {
       console.error("Error posting comment:", err);
       alert("Failed to post comment.");
     }
   };
 
-  const commentsRes = async () => {
+  const fetchComments = async () => {
     try {
       const commentRes = await fetch(
         `http://localhost:3000/api/tasks/${taskId}/comments`,
@@ -115,11 +114,10 @@ const TaskDetailScreen = () => {
         }
       );
 
-      if (!commentRes.ok) throw new Error("Failed to fetch Comments");
+      if (!commentRes.ok) throw new Error("Failed to fetch comments");
 
       const commentData = await commentRes.json();
       setComments(commentData.comment);
-      console.log(commentData);
     } catch (err) {
       console.error(err);
     }
@@ -143,7 +141,6 @@ const TaskDetailScreen = () => {
 
         const taskData = await taskRes.json();
         setTask(taskData.task);
-        console.log(taskData);
       } catch (err) {
         console.error(err);
       } finally {
@@ -153,8 +150,8 @@ const TaskDetailScreen = () => {
 
     if (taskId) {
       fetchTaskDetails();
-      commentsRes();
-      attachmentsres();
+      fetchComments();
+      fetchAttachments();
     }
   }, [taskId, token]);
 
@@ -230,21 +227,45 @@ const TaskDetailScreen = () => {
 
               {/* Right side */}
               <div className="flex items-center space-x-3">
-                <button className="relative p-2 rounded-md text-gray-600 hover:bg-gray-100">
-                  <Bell className="h-5 w-5" />
-                  <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
-                </button>
-
                 <div className="relative">
                   <button
                     onClick={() => setShowUserMenu(!showUserMenu)}
-                    className="flex items-center space-x-2 p-2 rounded-md text-gray-600 hover:bg-gray-100"
+                    className="group flex items-center gap-3 px-3 py-2 rounded-lg transition-all text-gray-700 hover:bg-gray-100"
                   >
-                    <User className="h-5 w-5" />
-                    <ChevronDown className="h-4 w-4" />
+                    <div className="p-[2px] rounded-full bg-gradient-to-r from-purple-500 to-blue-500">
+                      <div className="bg-white rounded-full p-1">
+                        <User className="h-6 w-6 text-purple-500 group-hover:text-blue-500" />
+                      </div>
+                    </div>
+
+                    {currentUser?.name && (
+                      <div className="hidden sm:flex flex-col text-left">
+                        <span className="text-xs text-gray-500">Welcome</span>
+                        <span className="text-sm font-medium text-gray-800">
+                          {currentUser.name}
+                        </span>
+                      </div>
+                    )}
+
+                    <ChevronDown className="h-4 w-4 ml-auto text-gray-500" />
                   </button>
+
                   {showUserMenu && (
-                    <div className="absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 z-10 border bg-white border-gray-200 text-gray-700">
+                    <div className="absolute right-0 mt-2 w-56 rounded-md shadow-lg py-2 z-50 border bg-white border-gray-200 text-gray-700">
+                      <div className="px-4 py-3 border-b border-gray-100">
+                        <div className="flex flex-col">
+                          {currentUser?.name && (
+                            <span className="font-medium text-gray-800 sm:hidden">
+                              {currentUser.name}
+                            </span>
+                          )}
+                          <div className="flex items-center gap-1 text-sm text-gray-500 mt-1">
+                            <Mail className="h-4 w-4" />
+                            <span>{currentUser?.email || "No email"}</span>
+                          </div>
+                        </div>
+                      </div>
+
                       <Link
                         to="/profile"
                         className="block px-4 py-2 text-sm hover:bg-gray-100"
@@ -254,7 +275,7 @@ const TaskDetailScreen = () => {
 
                       <button
                         onClick={handleLogout}
-                        className="block w-full text-left px-4 py-2 text-sm flex items-center hover:bg-gray-100"
+                        className="block w-full text-left px-4 py-2 text-sm flex items-center text-red-600 hover:bg-red-50 hover:text-red-700"
                       >
                         <LogOut className="inline h-4 w-4 mr-2" />
                         Logout
@@ -269,7 +290,7 @@ const TaskDetailScreen = () => {
 
         {/* Main Content */}
         <main className="flex-1 overflow-auto p-4 sm:p-6">
-          {/* Individual Task Screen */}
+          {/* Task Section */}
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
             <div className="flex justify-between items-start mb-4">
               <div className="flex-1">
@@ -341,12 +362,16 @@ const TaskDetailScreen = () => {
             </div>
           </div>
 
+          {/* Comments & Attachments */}
           <div className="flex-1 space-y-4">
-            {/* Comment Section */}
-            <CommentsSection comments={comments} onAddComment={handleAddComment} />
-
-            {/* Attachment Section */}
-            <AttachmentsSection attachments={attachments} onUpload={handleAttachmentUpload} />
+            <CommentsSection
+              comments={comments}
+              onAddComment={handleAddComment}
+            />
+            <AttachmentsSection
+              attachments={attachments}
+              onUpload={handleAttachmentUpload}
+            />
           </div>
         </main>
       </div>
