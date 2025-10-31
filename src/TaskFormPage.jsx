@@ -539,8 +539,7 @@ const TaskFormPage = ({ mode }) => {
               {/* Success Message */}
               {showSuccess && (
                 <div
-                  className="fixed bottom-6 left-6 z-50 p-4 bg-green-50 border border-green-200 
-                            rounded-lg flex items-center shadow-lg animate-fade-in"
+                  className="fixed bottom-6 left-6 flex items-center gap-2 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg shadow-lg animate-fade-in-up transition-all"
                 >
                   <Check className="w-5 h-5 text-green-600 mr-3" />
                   <p className="text-green-700 text-sm">
@@ -1117,7 +1116,7 @@ const TaskFormPage = ({ mode }) => {
                   )}
 
                   {showRaciSnackbar && (
-                    <div className="fixed bottom-6 left-6 flex items-center gap-2 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg shadow-lg animate-fade-in">
+                    <div className="fixed bottom-6 left-6 flex items-center gap-2 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg shadow-lg animate-fade-in-up transition-all">
                       <Check className="w-5 h-5 text-green-600" />
                       <p className="text-sm font-medium">
                         RACI Role updated successfully.

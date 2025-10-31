@@ -27,6 +27,104 @@ const TaskDetailScreen = () => {
   });
   const token = localStorage.getItem("token");
 
+  const handleAttachmentUpload = async (file) => {
+    if (!file) return;
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const res = await fetch(
+        `http://localhost:3000/api/tasks/${taskId}/attachments`,
+        {
+          method: "POST",
+          headers: { Authorization: `Bearer ${token}` },
+          body: formData,
+          cache: "no-store",
+        }
+      );
+
+      if (!res.ok) throw new Error("Upload failed");
+
+      await attachmentsres();
+    } catch (err) {
+      console.error("Error uploading attachment:", err);
+      alert("Failed to upload attachment.");
+    }
+  };
+
+  const attachmentsres = async () => {
+    try {
+      const attachmentRes = await fetch(
+        `http://localhost:3000/api/tasks/${taskId}/attachments`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          cache: "no-store",
+        }
+      );
+
+      if (!attachmentRes.ok) throw new Error("Failed to fetch Attachments");
+
+      const attachmentData = await attachmentRes.json();
+      setAttachments(attachmentData.attachments);
+      console.log(attachmentData);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleAddComment = async (commentText) => {
+    if (!commentText.trim()) return;
+
+    try {
+      const res = await fetch(
+        `http://localhost:3000/api/tasks/${taskId}/comments`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            content: commentText,
+          }),
+        }
+      );
+
+      if (!res.ok) throw new Error("Failed to post comment");
+
+      await commentsRes(); 
+    } catch (err) {
+      console.error("Error posting comment:", err);
+      alert("Failed to post comment.");
+    }
+  };
+
+  const commentsRes = async () => {
+    try {
+      const commentRes = await fetch(
+        `http://localhost:3000/api/tasks/${taskId}/comments`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          cache: "no-store",
+        }
+      );
+
+      if (!commentRes.ok) throw new Error("Failed to fetch Comments");
+
+      const commentData = await commentRes.json();
+      setComments(commentData.comment);
+      console.log(commentData);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   useEffect(() => {
     const fetchTaskDetails = async () => {
       try {
@@ -50,52 +148,6 @@ const TaskDetailScreen = () => {
         console.error(err);
       } finally {
         setLoading(false);
-      }
-    };
-
-    const commentsRes = async () => {
-      try {
-        const commentRes = await fetch(
-          `http://localhost:3000/api/tasks/${taskId}/comments`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-            cache: "no-store",
-          }
-        );
-
-        if (!commentRes.ok) throw new Error("Failed to fetch Comments");
-
-        const commentData = await commentRes.json();
-        setComments(commentData.comment);
-        console.log(commentData);
-      } catch (err) {
-        console.error(err);
-      }
-    };
-
-    const attachmentsres = async () => {
-      try {
-        const attachmentRes = await fetch(
-          `http://localhost:3000/api/tasks/${taskId}/attachments`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-            cache: "no-store",
-          }
-        );
-
-        if (!attachmentRes.ok) throw new Error("Failed to fetch Attachments");
-
-        const attachmentData = await attachmentRes.json();
-        setAttachments(attachmentData.attachments);
-        console.log(attachmentData);
-      } catch (err) {
-        console.error(err);
       }
     };
 
@@ -291,10 +343,10 @@ const TaskDetailScreen = () => {
 
           <div className="flex-1 space-y-4">
             {/* Comment Section */}
-            <CommentsSection comments={comments} />
+            <CommentsSection comments={comments} onAddComment={handleAddComment} />
 
             {/* Attachment Section */}
-            <AttachmentsSection attachments={attachments} />
+            <AttachmentsSection attachments={attachments} onUpload={handleAttachmentUpload} />
           </div>
         </main>
       </div>
