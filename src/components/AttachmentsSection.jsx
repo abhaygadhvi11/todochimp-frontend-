@@ -95,7 +95,7 @@ const AttachmentsSection = ({ attachments = [], onUpload }) => {
             className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-colors"
           >
             <Upload className="w-4 h-4" />
-            Add Files
+            <span className="hidden sm:inline">Add Files</span>
           </button>
         </div>
       </div>
@@ -120,12 +120,20 @@ const AttachmentsSection = ({ attachments = [], onUpload }) => {
                     {file.name}
                   </span>
                 </div>
-                <button
-                  onClick={() => handleRemovePending(file.name)}
-                  className="p-1 hover:bg-red-100 rounded-md"
-                >
-                  <X className="w-4 h-4 text-red-500" />
-                </button>
+                <div className="relative group">
+                  <button
+                    onClick={() =>
+                      handleRemovePending(file.name)
+                    }
+                    className="p-1 hover:bg-gray-100 rounded-md flex-shrink-0"
+                  >
+                    <X className="w-3.5 h-3.5 text-red-500" />
+                  </button>
+
+                  <span className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 text-xs text-white bg-gray-900 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none z-20">
+                    Remove
+                  </span>
+                </div>
               </div>
             ))}
           </div>
@@ -171,14 +179,20 @@ const AttachmentsSection = ({ attachments = [], onUpload }) => {
                 </div>
               </div>
 
-              <button
-                onClick={() =>
-                  downloadBase64File(attachment.base64, attachment.fileName)
-                }
-                className="p-1 hover:bg-gray-100 rounded-md flex-shrink-0"
-              >
-                <Download className="w-3.5 h-3.5 text-gray-500" />
-              </button>
+              <div className="relative group">
+                <button
+                  onClick={() =>
+                    downloadBase64File(attachment.base64, attachment.fileName)
+                  }
+                  className="p-1 hover:bg-gray-100 rounded-md flex-shrink-0"
+                >
+                  <Download className="w-3.5 h-3.5 text-gray-500" />
+                </button>
+
+                <span className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 text-xs text-white bg-gray-900 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none z-20">
+                  Download File
+                </span>
+              </div>
             </div>
           ))}
         </div>

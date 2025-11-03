@@ -8,6 +8,7 @@ import {
   Eye,User, Calendar,
   ChevronLeft,
   ChevronRight,
+  Check
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import TopNavBar from "./components/TopNavBar";
@@ -23,6 +24,7 @@ const DashboardPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [tasksPerPage] = useState(20);
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);
+  const [showSnackbar, setShowSnackbar] = useState(false);
   const [currentUser, setCurrentUser] = useState(() => {
     const storedUser = localStorage.getItem("user");
     return storedUser ? JSON.parse(storedUser) : null;
@@ -78,7 +80,8 @@ const DashboardPage = () => {
 
       if (!res.ok) throw new Error(data.error || "Failed to delete task");
       setTasks((prevTasks) => prevTasks.filter((task) => task.id !== taskId));
-      alert("Task deleted successfully!");
+      setShowSnackbar(true);
+      setTimeout(() => setShowSnackbar(false), 2500);
     } catch (error) {
       console.error("Delete error:", error);
       alert(error.message);
@@ -508,6 +511,14 @@ const DashboardPage = () => {
               </button>
             </div>
           </main>
+
+          {/* Snackbar for successful deletion */}
+          {showSnackbar && (
+            <div className="fixed bottom-6 left-6 flex items-center gap-2 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg shadow-md transition-all animate-fade-in-up z-50">
+              <Check className="w-5 h-5 text-green-600" />
+              <p className="text-sm font-medium">Task deleted successfully!</p>
+            </div>
+          )}
         </div>
       </div>
     </div>
