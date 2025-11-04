@@ -8,6 +8,7 @@ import {
   Upload,
   Check,
   X,
+  Trash2,
 } from "lucide-react";
 
 const getFileIcon = (fileName) => {
@@ -37,10 +38,16 @@ function downloadBase64File(base64Data, fileName) {
   document.body.removeChild(link);
 }
 
-const AttachmentsSection = ({ attachments = [], onUpload }) => {
+const AttachmentsSection = ({
+  attachments = [],
+  onUpload,
+  taskId,
+  onRemove,
+}) => {
   const fileInputRef = useRef(null);
   const [pendingFiles, setPendingFiles] = useState([]);
   const [showUploadSnackbar, setShowUploadSnackbar] = useState(false);
+  const [showDeleteSnackbar, setShowDeleteSnackbar] = useState(false);
   const [uploading, setUploading] = useState(false);
 
   const handleFileChange = (e) => {
@@ -72,6 +79,37 @@ const AttachmentsSection = ({ attachments = [], onUpload }) => {
     }
   };
 
+  const handleDelete = async (attachmentId) => {
+    if (!confirm("Are you sure you want to delete this attachment?")) return;
+
+    try {
+      const token = localStorage.getItem("token");
+
+      const res = await fetch(
+        `http://localhost:3000/api/tasks/${taskId}/attachments?attachmentId=${attachmentId}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      const data = await res.json();
+
+      if (res.ok && data.success) {
+        onRemove?.(attachmentId);
+        setShowDeleteSnackbar(true);
+        setTimeout(() => setShowDeleteSnackbar(false), 2500);
+      } else {
+        alert(data.error || "Failed to delete attachment");
+      }
+    } catch (error) {
+      console.error("Delete error:", error);
+      alert("Something went wrong while deleting the file");
+    }
+  };
+
   return (
     <div className="bg-white border border-gray-200 rounded-lg p-5 shadow-sm">
       {/* Header */}
@@ -100,7 +138,7 @@ const AttachmentsSection = ({ attachments = [], onUpload }) => {
         </div>
       </div>
 
-      {/* Pending Files */}
+      {/* Pending Uploads */}
       {pendingFiles.length > 0 && (
         <div className="mb-4 border border-dashed border-blue-300 bg-blue-50 p-3 rounded-lg">
           <p className="text-sm font-medium text-blue-700 mb-2">
@@ -122,15 +160,12 @@ const AttachmentsSection = ({ attachments = [], onUpload }) => {
                 </div>
                 <div className="relative group">
                   <button
-                    onClick={() =>
-                      handleRemovePending(file.name)
-                    }
+                    onClick={() => handleRemovePending(file.name)}
                     className="p-1 hover:bg-gray-100 rounded-md flex-shrink-0"
                   >
                     <X className="w-3.5 h-3.5 text-red-500" />
                   </button>
-
-                  <span className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 text-xs text-white bg-gray-900 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none z-20">
+                  <span className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-1 px-2 py-1 text-xs text-white bg-gray-900 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                     Remove
                   </span>
                 </div>
@@ -152,57 +187,167 @@ const AttachmentsSection = ({ attachments = [], onUpload }) => {
         </div>
       )}
 
-      {/* Uploaded Files */}
+      {/* Uploaded Attachments */}
       {attachments.length === 0 ? (
-        <p className="text-sm text-gray-500">No attachments available</p>
+        <p className="text-sm text-gray-500 text-center py-3">
+          No attachments available
+        </p>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
-          {attachments.map((attachment) => (
-            <div
-              key={attachment.id}
-              className="flex items-center justify-between p-2 border border-gray-100 rounded-md hover:bg-gray-50 transition-colors"
-            >
-              <div className="flex items-center gap-2 min-w-0">
-                <div className="w-8 h-8 bg-gray-100 rounded-md flex items-center justify-center">
-                  {getFileIcon(attachment.fileName)}
-                </div>
-                <div className="min-w-0">
-                  <p
-                    className="font-medium text-xs text-gray-900 truncate"
-                    title={attachment.fileName}
-                  >
-                    {attachment.fileName}
-                  </p>
-                  <p className="text-xs text-gray-500">
-                    {new Date(attachment.uploadedAt).toLocaleDateString()}
-                  </p>
-                </div>
-              </div>
-
-              <div className="relative group">
-                <button
-                  onClick={() =>
-                    downloadBase64File(attachment.base64, attachment.fileName)
-                  }
-                  className="p-1 hover:bg-gray-100 rounded-md flex-shrink-0"
+        <>
+          {/* Mobile View */}
+          <div className="lg:hidden max-h-64 overflow-y-auto pr-1">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {attachments.map((attachment) => (
+                <div
+                  key={attachment.id}
+                  className="flex items-center justify-between p-3 bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition-all"
                 >
-                  <Download className="w-3.5 h-3.5 text-gray-500" />
-                </button>
+                  <div className="flex items-center gap-2 min-w-0">
+                    <div className="w-9 h-9 bg-gray-100 rounded-md flex items-center justify-center">
+                      {getFileIcon(attachment.fileName)}
+                    </div>
+                    <div className="min-w-0">
+                      <p
+                        className="font-medium text-sm text-gray-900 truncate"
+                        title={attachment.fileName}
+                      >
+                        {attachment.fileName}
+                      </p>
+                      <p className="text-xs text-gray-500">
+                        {new Date(attachment.uploadedAt).toLocaleDateString()}
+                      </p>
+                    </div>
+                  </div>
 
-                <span className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 text-xs text-white bg-gray-900 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none z-20">
-                  Download File
-                </span>
-              </div>
+                  <div className="flex items-center gap-2 flex-shrink-0">
+                    <button
+                      onClick={() =>
+                        downloadBase64File(
+                          attachment.base64,
+                          attachment.fileName
+                        )
+                      }
+                      className="p-1.5 hover:bg-gray-100 rounded-md transition"
+                    >
+                      <Download className="w-4 h-4 text-gray-500" />
+                    </button>
+                    <button
+                      onClick={() => handleDelete(attachment.id)}
+                      className="p-1.5 hover:bg-red-50 rounded-md transition"
+                    >
+                      <Trash2 className="w-4 h-4 text-red-500" />
+                    </button>
+                  </div>
+                </div>
+              ))}
             </div>
-          ))}
+          </div>
+
+          {/* Desktop Table View */}
+          <div className="hidden lg:flex flex-col mt-4 bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden">
+            <div className="max-h-70 overflow-y-auto">
+              <table className="min-w-full border-collapse">
+                {/* Sticky Header */}
+                <thead className="bg-gradient-to-r from-blue-700 to-purple-600 text-white sticky top-0 z-10">
+                  <tr>
+                    <th className="py-4 px-6 text-center text-m font-semibold w-16">
+                      #
+                    </th>
+                    <th className="py-4 px-6 text-left text-m font-semibold">
+                      File Name
+                    </th>
+                    <th className="py-4 px-6 text-center text-m font-semibold">
+                      Uploaded Date
+                    </th>
+                    <th className="py-4 px-6 text-center text-m font-semibold">
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+
+                {/* Scrollable Body */}
+                <tbody className="divide-y divide-gray-100">
+                  {attachments.map((attachment, index) => (
+                    <tr
+                      key={attachment.id}
+                      className={`transition-all duration-200 ${
+                        index % 2 === 0 ? "bg-gray-50" : "bg-white"
+                      } hover:bg-indigo-50`}
+                    >
+                      {/* Sr No */}
+                      <td className="px-6 py-3 text-center text-sm font-medium text-gray-700">
+                        {index + 1}
+                      </td>
+
+                      {/* File Name */}
+                      <td
+                        className="px-6 py-3 text-left text-sm font-medium text-gray-900 truncate max-w-[280px]"
+                        title={attachment.fileName}
+                      >
+                        {attachment.fileName}
+                      </td>
+
+                      {/* Uploaded Date */}
+                      <td className="px-6 py-3 text-center text-sm text-gray-700 whitespace-nowrap">
+                        {new Date(attachment.uploadedAt).toLocaleDateString()}
+                      </td>
+
+                      {/* Actions */}
+                      <td className="px-6 py-3 text-center">
+                        <div className="inline-flex justify-center space-x-2">
+                          {/* Download */}
+                          <div className="relative group">
+                            <button
+                              onClick={() =>
+                                downloadBase64File(
+                                  attachment.base64,
+                                  attachment.fileName
+                                )
+                              }
+                              className="p-2 rounded-full bg-blue-50 border text-blue-600 hover:bg-blue-100 transition-colors"
+                            >
+                              <Download className="h-4 w-4" />
+                            </button>
+                            <span className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 text-xs text-white bg-gray-900 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none z-20">
+                              Download File
+                            </span>
+                          </div>
+
+                          {/* Delete */}
+                          <div className="relative group">
+                            <button
+                              onClick={() => handleDelete(attachment.id)}
+                              className="p-2 rounded-full bg-red-50 border text-red-600 hover:bg-red-100 transition-colors"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </button>
+                            <span className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 text-xs text-white bg-gray-900 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none z-20">
+                              Delete File
+                            </span>
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* Upload Snackbar */}
+      {showUploadSnackbar && (
+        <div className="fixed bottom-6 left-6 flex items-center gap-2 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg shadow-md transition-all animate-fade-in-up z-50">
+          <Check className="w-5 h-5 text-green-600" />
+          <p className="text-sm">Files uploaded successfully</p>
         </div>
       )}
 
-      {/* Snackbar */}
-      {showUploadSnackbar && (
-        <div className="fixed bottom-6 left-6 flex items-center gap-2 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg shadow-md transition-all animate-fade-in-up">
+      {showDeleteSnackbar && (
+        <div className="fixed bottom-6 left-6 flex items-center gap-2 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg shadow-md transition-all animate-fade-in-up z-50">
           <Check className="w-5 h-5 text-green-600" />
-          <p className="text-sm">Files uploaded successfully</p>
+          <p className="text-sm">File deleted successfully</p>
         </div>
       )}
     </div>

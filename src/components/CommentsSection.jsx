@@ -34,7 +34,7 @@ const CommentsSection = ({ comments = [], onAddComment }) => {
       {/* Comment List */} 
       {comments.length === 0 ? (
         <p className="text-gray-500 text-sm text-center py-3">No comments yet.</p> ) : (
-          <div className="space-y-2 max-h-64 overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-gray-300">
+          <div className="space-y-2 max-h-70 overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-gray-300">
             {comments.map((comment) => (
               <div
                 key={comment.id}

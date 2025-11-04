@@ -17,8 +17,10 @@ import {
   RotateCcw,
 } from "lucide-react";
 import { useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const TaskFormPage = ({ mode }) => {
+  const navigate = useNavigate();
   const { taskId } = useParams();
   const [formData, setFormData] = useState({
     title: "",
@@ -393,7 +395,7 @@ const TaskFormPage = ({ mode }) => {
 
       setShowSuccess(true);
       setIsDirty(false);
-      setTimeout(() => setShowSuccess(false), 4000);
+      setTimeout(() => navigate("/dashboard"), 1200);
 
       if (isEdit && taskId) {
         const newAssignments = raciAssignments.filter((a) => !a.id && a.email);

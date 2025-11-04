@@ -369,9 +369,11 @@ const TaskDetailScreen = () => {
               onAddComment={handleAddComment}
             />
             <AttachmentsSection
-              attachments={attachments}
-              onUpload={handleAttachmentUpload}
-            />
+    attachments={attachments}
+    onUpload={handleAttachmentUpload}
+    onRemove={(id) => setAttachments((prev) => prev.filter((a) => a.id !== id))}
+    taskId={taskId}
+  />
           </div>
         </main>
       </div>
