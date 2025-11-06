@@ -80,19 +80,21 @@ export default function SignupPage() {
       const data = await response.json();
 
       if (response.ok) {
-        // Store user data and token for the session
-        const userData = {
-          id: data.data.user.id,
-          name: data.data.user.name,
-          email: data.data.user.email,
-          role: data.data.user.role,
-          organizationId: data.data.user.organizationId,
-          token: data.data.token,
-        };
+      const userData = {
+        id: data.data.user.id,
+        name: data.data.user.name,
+        email: data.data.user.email,
+        role: data.data.user.role,
+        organizationId: data.data.user.organizationId,
+        token: data.data.token,
+      };
 
-        navigate("/login");
-        console.log("User registered:", userData);
-      } else {
+      localStorage.setItem("user", JSON.stringify(userData));
+      localStorage.setItem("token", data.data.token);
+
+      navigate("/dashboard");
+      console.log("User registered and logged in:", userData);
+    } else {
         if (data.errors) {
           setErrors(data.errors);
         } else {
