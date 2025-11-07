@@ -5,10 +5,11 @@ import ForgotPasswordPage from "./ForgotPasswordPage";
 import ResetPasswordPage from "./ResetPasswordPage";
 import { Link, useNavigate } from "react-router-dom";
 
-const API_URL = "http://localhost:3000";  
+const API_URL = "http://localhost:3000";
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+const PASSWORD_REGEX =
+  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -190,6 +191,7 @@ export default function LoginPage() {
                 required
                 value={formData.email}
                 onChange={handleChange}
+                autoFocus
                 className={`w-full pl-12 pr-4 py-3 bg-white/60 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all ${
                   errors.email ? "border-red-300" : "border-gray-200"
                 }`}
@@ -214,6 +216,9 @@ export default function LoginPage() {
                 required
                 value={formData.password}
                 onChange={handleChange}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") handleSubmit();
+                }}
                 className={`w-full pl-12 pr-12 py-3 bg-white/60 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all ${
                   errors.password ? "border-red-300" : "border-gray-200"
                 }`}

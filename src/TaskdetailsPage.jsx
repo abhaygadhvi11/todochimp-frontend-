@@ -1,10 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import {
   Calendar,
   User,
   ArrowLeft,
-  Bell,
   ChevronDown,
   LogOut,
   Mail,
@@ -27,6 +26,28 @@ const TaskDetailScreen = () => {
   });
   const token = localStorage.getItem("token");
 
+  const userMenuRef = useRef(null); // ✅ for outside click
+
+  // 🔹 Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (userMenuRef.current && !userMenuRef.current.contains(event.target)) {
+        setShowUserMenu(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  // 🔹 Close dropdown on ESC
+  useEffect(() => {
+    const handleEsc = (event) => {
+      if (event.key === "Escape") setShowUserMenu(false);
+    };
+    document.addEventListener("keydown", handleEsc);
+    return () => document.removeEventListener("keydown", handleEsc);
+  }, []);
+
   const handleAttachmentUpload = async (file) => {
     if (!file) return;
     const formData = new FormData();
@@ -44,7 +65,6 @@ const TaskDetailScreen = () => {
       );
 
       if (!res.ok) throw new Error("Upload failed");
-
       await fetchAttachments();
     } catch (err) {
       console.error("Error uploading attachment:", err);
@@ -54,7 +74,7 @@ const TaskDetailScreen = () => {
 
   const fetchAttachments = async () => {
     try {
-      const attachmentRes = await fetch(
+      const res = await fetch(
         `http://localhost:3000/api/tasks/${taskId}/attachments`,
         {
           headers: {
@@ -64,11 +84,9 @@ const TaskDetailScreen = () => {
           cache: "no-store",
         }
       );
-
-      if (!attachmentRes.ok) throw new Error("Failed to fetch attachments");
-
-      const attachmentData = await attachmentRes.json();
-      setAttachments(attachmentData.attachments);
+      if (!res.ok) throw new Error("Failed to fetch attachments");
+      const data = await res.json();
+      setAttachments(data.attachments);
     } catch (err) {
       console.error(err);
     }
@@ -76,7 +94,6 @@ const TaskDetailScreen = () => {
 
   const handleAddComment = async (commentText) => {
     if (!commentText.trim()) return;
-
     try {
       const res = await fetch(
         `http://localhost:3000/api/tasks/${taskId}/comments`,
@@ -89,9 +106,7 @@ const TaskDetailScreen = () => {
           body: JSON.stringify({ content: commentText }),
         }
       );
-
       if (!res.ok) throw new Error("Failed to post comment");
-
       await fetchComments();
     } catch (err) {
       console.error("Error posting comment:", err);
@@ -101,7 +116,7 @@ const TaskDetailScreen = () => {
 
   const fetchComments = async () => {
     try {
-      const commentRes = await fetch(
+      const res = await fetch(
         `http://localhost:3000/api/tasks/${taskId}/comments`,
         {
           headers: {
@@ -111,11 +126,9 @@ const TaskDetailScreen = () => {
           cache: "no-store",
         }
       );
-
-      if (!commentRes.ok) throw new Error("Failed to fetch comments");
-
-      const commentData = await commentRes.json();
-      setComments(commentData.comment);
+      if (!res.ok) throw new Error("Failed to fetch comments");
+      const data = await res.json();
+      setComments(data.comment);
     } catch (err) {
       console.error(err);
     }
@@ -124,21 +137,17 @@ const TaskDetailScreen = () => {
   useEffect(() => {
     const fetchTaskDetails = async () => {
       try {
-        const taskRes = await fetch(
-          `http://localhost:3000/api/tasks/${taskId}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-            cache: "no-store",
-          }
-        );
+        const res = await fetch(`http://localhost:3000/api/tasks/${taskId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          cache: "no-store",
+        });
 
-        if (!taskRes.ok) throw new Error("Failed to fetch task");
-
-        const taskData = await taskRes.json();
-        setTask(taskData.task);
+        if (!res.ok) throw new Error("Failed to fetch task");
+        const data = await res.json();
+        setTask(data.task);
       } catch (err) {
         console.error(err);
       } finally {
@@ -202,6 +211,7 @@ const TaskDetailScreen = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 text-gray-900">
       <div className="flex flex-col h-screen">
+        {/* Navbar */}
         <nav className="bg-white border-b border-gray-200 shadow-sm">
           <div className="px-4 sm:px-6 lg:px-8">
             <div className="flex justify-between items-center h-16">
@@ -225,9 +235,9 @@ const TaskDetailScreen = () => {
 
               {/* Right side */}
               <div className="flex items-center space-x-3">
-                <div className="relative">
+                <div className="relative" ref={userMenuRef}>
                   <button
-                    onClick={() => setShowUserMenu(!showUserMenu)}
+                    onClick={() => setShowUserMenu((prev) => !prev)}
                     className="group flex items-center gap-3 px-3 py-2 rounded-lg transition-all text-gray-700 hover:bg-gray-100"
                   >
                     <div className="p-[2px] rounded-full bg-gradient-to-r from-purple-500 to-blue-500">
@@ -266,13 +276,17 @@ const TaskDetailScreen = () => {
 
                       <Link
                         to="/profile"
+                        onClick={() => setShowUserMenu(false)}
                         className="block px-4 py-2 text-sm hover:bg-gray-100"
                       >
                         Profile
                       </Link>
 
                       <button
-                        onClick={handleLogout}
+                        onClick={() => {
+                          setShowUserMenu(false);
+                          handleLogout();
+                        }}
                         className="block w-full text-left px-4 py-2 text-sm flex items-center text-red-600 hover:bg-red-50 hover:text-red-700"
                       >
                         <LogOut className="inline h-4 w-4 mr-2" />
@@ -288,9 +302,7 @@ const TaskDetailScreen = () => {
 
         {/* Main Content */}
         <main className="flex-1 overflow-auto p-4 sm:p-6">
-          {/* Task Section */}
           <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-5 mb-6">
-            {/* Title & Meta */}
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
               <div>
                 <h1 className="text-xl sm:text-2xl font-semibold text-gray-900">
@@ -369,11 +381,13 @@ const TaskDetailScreen = () => {
               onAddComment={handleAddComment}
             />
             <AttachmentsSection
-    attachments={attachments}
-    onUpload={handleAttachmentUpload}
-    onRemove={(id) => setAttachments((prev) => prev.filter((a) => a.id !== id))}
-    taskId={taskId}
-  />
+              attachments={attachments}
+              onUpload={handleAttachmentUpload}
+              onRemove={(id) =>
+                setAttachments((prev) => prev.filter((a) => a.id !== id))
+              }
+              taskId={taskId}
+            />
           </div>
         </main>
       </div>

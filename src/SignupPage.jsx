@@ -80,21 +80,21 @@ export default function SignupPage() {
       const data = await response.json();
 
       if (response.ok) {
-      const userData = {
-        id: data.data.user.id,
-        name: data.data.user.name,
-        email: data.data.user.email,
-        role: data.data.user.role,
-        organizationId: data.data.user.organizationId,
-        token: data.data.token,
-      };
+        const userData = {
+          id: data.data.user.id,
+          name: data.data.user.name,
+          email: data.data.user.email,
+          role: data.data.user.role,
+          organizationId: data.data.user.organizationId,
+          token: data.data.token,
+        };
 
-      localStorage.setItem("user", JSON.stringify(userData));
-      localStorage.setItem("token", data.data.token);
+        localStorage.setItem("user", JSON.stringify(userData));
+        localStorage.setItem("token", data.data.token);
 
-      navigate("/dashboard");
-      console.log("User registered and logged in:", userData);
-    } else {
+        navigate("/dashboard");
+        console.log("User registered and logged in:", userData);
+      } else {
         if (data.errors) {
           setErrors(data.errors);
         } else {
@@ -177,6 +177,7 @@ export default function SignupPage() {
                 required
                 value={formData.name}
                 onChange={handleChange}
+                autoFocus
                 className={`w-full pl-12 pr-4 py-3 bg-white/60 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all ${
                   errors.name ? "border-red-300" : "border-gray-200"
                 }`}

@@ -104,7 +104,11 @@ export default function ForgotPasswordPage() {
                 type="email"
                 required
                 value={email}
+                autoFocus
                 onChange={(e) => setEmail(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") handleSubmit();
+                }}
                 className="w-full pl-12 pr-4 py-3 bg-white/60 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
                 placeholder="Enter your email"
               />

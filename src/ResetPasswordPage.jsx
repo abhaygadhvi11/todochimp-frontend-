@@ -154,6 +154,7 @@ export default function ResetPasswordPage({ onBackToLogin }) {
                 type={showNewPassword ? "text" : "password"}
                 value={formData.newPassword}
                 onChange={handleChange}
+                autoFocus
                 className={`w-full pl-12 pr-12 py-3 bg-white/60 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all ${
                   errors.newPassword ? "border-red-300" : "border-gray-200"
                 }`}
@@ -184,6 +185,9 @@ export default function ResetPasswordPage({ onBackToLogin }) {
                 className={`w-full pl-12 pr-12 py-3 bg-white/60 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all ${
                   errors.confirmPassword ? "border-red-300" : "border-gray-200"
                 }`}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") handleSubmit();
+                }}
                 placeholder="Confirm your new password"
               />
               <EyeIcon

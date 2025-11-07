@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   Calendar,
   User,
@@ -20,6 +20,7 @@ import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 
 const TaskFormPage = ({ mode }) => {
+  const titleRef = useRef(null);
   const navigate = useNavigate();
   const { taskId } = useParams();
   const [formData, setFormData] = useState({
@@ -56,6 +57,12 @@ const TaskFormPage = ({ mode }) => {
       setIsEdit(true);
     }
   }, [mode, taskId]);
+
+  useEffect(() => {
+    if (!isAssigneeOnly && titleRef.current) {
+      titleRef.current.focus();
+    }
+  }, [isAssigneeOnly]);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -540,9 +547,7 @@ const TaskFormPage = ({ mode }) => {
 
               {/* Success Message */}
               {showSuccess && (
-                <div
-                  className="fixed bottom-6 left-6 flex items-center gap-2 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg shadow-lg animate-fade-in-up transition-all"
-                >
+                <div className="fixed bottom-6 left-6 flex items-center gap-2 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg shadow-lg animate-fade-in-up transition-all">
                   <Check className="w-5 h-5 text-green-600 mr-3" />
                   <p className="text-green-700 text-sm">
                     Your task has been {isEdit ? "updated" : "created"}{" "}
@@ -558,7 +563,9 @@ const TaskFormPage = ({ mode }) => {
                   <label className="block text-sm font-medium text-gray-900 mb-1.5">
                     Task Title <span className="text-red-600">*</span>
                   </label>
+
                   <input
+                    ref={titleRef}
                     type="text"
                     value={formData.title}
                     onChange={(e) => handleInputChange("title", e.target.value)}

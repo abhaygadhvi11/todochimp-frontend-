@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { User, ChevronDown, LogOut, Menu, Mail } from "lucide-react";
 import { Link } from "react-router-dom";
 
@@ -9,6 +9,18 @@ const TopNavBar = ({
   user,
 }) => {
   const [showUserMenu, setShowUserMenu] = useState(false);
+  const userMenuRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (userMenuRef.current && !userMenuRef.current.contains(event.target)) {
+        setShowUserMenu(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   return (
     <nav className="bg-white border-b border-gray-200 shadow-sm z-50 relative">
@@ -35,20 +47,18 @@ const TopNavBar = ({
 
           {/* Right side */}
           <div className="flex items-center space-x-3">
-            <div className="relative">
+            <div className="relative" ref={userMenuRef}>
               <button
-                onClick={() => setShowUserMenu(!showUserMenu)}
+                onClick={() => setShowUserMenu((prev) => !prev)}
                 className="group flex items-center gap-3 px-3 py-2 rounded-lg w-full transition-all duration-200 
                           text-gray-700 hover:bg-gray-100"
               >
-                {/* Avatar with gradient border */}
                 <div className="p-[2px] rounded-full bg-gradient-to-r from-purple-500 to-blue-500 transition-all duration-300 group-hover:from-blue-500 group-hover:to-purple-500">
                   <div className="bg-white rounded-full p-1">
                     <User className="h-6 w-6 text-purple-500 transition-colors duration-300 group-hover:text-blue-500" />
                   </div>
                 </div>
 
-                {/* Welcome Text (desktop only) */}
                 {user?.name && (
                   <div className="hidden sm:flex flex-col text-left">
                     <span className="text-xs text-gray-500">Welcome</span>
@@ -61,10 +71,9 @@ const TopNavBar = ({
                 <ChevronDown className="h-4 w-4 ml-auto text-gray-500" />
               </button>
 
-              {/* Dropdown Menu */}
+              {/* Dropdown */}
               {showUserMenu && (
                 <div className="absolute right-0 mt-2 w-56 rounded-md shadow-lg py-2 z-50 border bg-white border-gray-200 text-gray-700">
-                  {/* User Info (always visible; acts as name on mobile) */}
                   <div className="px-4 py-3 border-b border-gray-100">
                     <div className="flex flex-col">
                       {user?.name && (
@@ -72,7 +81,6 @@ const TopNavBar = ({
                           {user.name}
                         </span>
                       )}
-
                       <div className="flex items-center gap-1 text-sm text-gray-500 mt-1">
                         <Mail className="h-4 w-4" />
                         <span>{user?.email || "No email"}</span>
@@ -80,17 +88,19 @@ const TopNavBar = ({
                     </div>
                   </div>
 
-                  {/* Links */}
                   <Link
                     to="/profile"
                     className="block px-4 py-2 text-sm hover:bg-gray-100"
+                    onClick={() => setShowUserMenu(false)} // close on click
                   >
                     Profile
                   </Link>
 
-                  {/* Logout Button (red) */}
                   <button
-                    onClick={handleLogout}
+                    onClick={() => {
+                      setShowUserMenu(false);
+                      handleLogout();
+                    }}
                     className="block w-full text-left px-4 py-2 text-sm flex items-center text-red-600 hover:bg-red-50 hover:text-red-700"
                   >
                     <LogOut className="inline h-4 w-4 mr-2" />
