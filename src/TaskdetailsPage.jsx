@@ -224,12 +224,17 @@ const TaskDetailScreen = () => {
                   <ArrowLeft className="h-5 w-5" />
                 </button>
                 <div className="flex items-center">
-                  <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
-                    <span className="text-white font-bold text-sm">TC</span>
-                  </div>
-                  <span className="ml-2 text-xl font-semibold hidden md:inline">
-                    TodoChimp
-                  </span>
+                  <Link
+                    to="/dashboard"
+                    className="flex items-center group cursor-pointer"
+                  >
+                    <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center group-hover:opacity-90 transition">
+                      <span className="text-white font-bold text-sm">TC</span>
+                    </div>
+                    <span className="ml-2 text-xl font-semibold hidden md:inline text-gray-800 group-hover:text-gray-900">
+                      TodoChimp
+                    </span>
+                  </Link>
                 </div>
               </div>
 

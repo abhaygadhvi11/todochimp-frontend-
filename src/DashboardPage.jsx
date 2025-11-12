@@ -5,10 +5,13 @@ import {
   Plus,
   Edit,
   Trash2,
-  Eye,User, Calendar,
+  Eye,
+  User,
+  Calendar,
   ChevronLeft,
   ChevronRight,
-  Check
+  Check,
+  Menu,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import TopNavBar from "./components/TopNavBar";
@@ -35,6 +38,7 @@ const DashboardPage = () => {
   useEffect(() => {
     const fetchTasks = async () => {
       try {
+        setLoading(true);
         const res = await fetch("http://localhost:3000/api/tasks", {
           method: "GET",
           headers: {
@@ -73,7 +77,7 @@ const DashboardPage = () => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        cache: "no-store"
+        cache: "no-store",
       });
 
       const data = await res.json();
@@ -101,7 +105,9 @@ const DashboardPage = () => {
           (task) => task.createdById === currentUser.id
         );
       } else {
-        filtered = filtered.filter((task) => task.status === selectedFilter.toUpperCase());
+        filtered = filtered.filter(
+          (task) => task.status === selectedFilter.toUpperCase()
+        );
       }
     }
 
@@ -182,6 +188,15 @@ const DashboardPage = () => {
 
   const filters = ["All", "Assigned to Me", "Created by Me", "Completed"];
 
+  const Loader = () => (
+    <div className="min-h-[60vh] flex items-center justify-center">
+      <div className="text-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+        <p className="text-gray-600 text-sm font-medium">Loading tasks...</p>
+      </div>
+    </div>
+  );
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 text-gray-900">
       <div className="flex flex-col h-screen">
@@ -201,10 +216,34 @@ const DashboardPage = () => {
               showMobileSidebar ? "translate-x-0" : "-translate-x-full"
             } fixed inset-y-0 left-0 z-50 w-64 transform transition-transform duration-200 ease-in-out md:translate-x-0 md:static md:inset-0 bg-white border-r border-gray-200`}
           >
-            <div className="flex flex-col h-full pt-16 md:pt-0">
+            <div className="flex flex-col h-full">
+              <div className="relative flex items-center justify-center p-4 border-b border-gray-200 md:hidden">
+                {/* Menu Button (Left Side) */}
+                <button
+                  onClick={() => setShowMobileSidebar(false)}
+                  className="absolute left-4 p-2 rounded-md text-gray-600 hover:bg-gray-100"
+                >
+                  <Menu className="h-5 w-5 text-black" />
+                </button>
+
+                {/* App Logo + Name (Centered) */}
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
+                    <span className="text-white font-bold text-sm">TC</span>
+                  </div>
+                  <span className="text-lg font-semibold text-gray-800">
+                    TodoChimp
+                  </span>
+                </div>
+              </div>
+
+              {/* Create Task Button */}
               <div className="p-4 border-b border-gray-200">
                 <button
-                  onClick={handleCreate}
+                  onClick={() => {
+                    handleCreate();
+                    setShowMobileSidebar(false);
+                  }}
                   className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-4 py-2 rounded-md flex items-center justify-center space-x-2"
                 >
                   <Plus className="h-4 w-4" />
@@ -212,18 +251,22 @@ const DashboardPage = () => {
                 </button>
               </div>
 
-              <nav className="flex-1 p-4 space-y-2">
-                <h3 className="text-xs font-semibold uppercase tracking-wider mb-3 text-black">
+              {/* Filter Menu */}
+              <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
+                <h3 className="text-xs font-semibold uppercase tracking-wider mb-3 text-gray-600">
                   Filters
                 </h3>
                 {filters.map((filter) => (
                   <button
                     key={filter}
-                    onClick={() => setSelectedFilter(filter)}
+                    onClick={() => {
+                      setSelectedFilter(filter);
+                      setShowMobileSidebar(false);
+                    }}
                     className={`w-full text-left px-3 py-2 rounded-md text-sm ${
                       selectedFilter === filter
-                        ? "bg-gradient-to-br from-indigo-100 to-blue-100 text-black"
-                        : "text-black hover:bg-gray-100"
+                        ? "bg-gradient-to-br from-indigo-100 to-blue-100 text-black font-medium"
+                        : "text-gray-700 hover:bg-gray-100"
                     }`}
                   >
                     {filter}
@@ -282,234 +325,248 @@ const DashboardPage = () => {
               </div>
             </div>
 
-            {/* Table (Desktop) - Shows at 1280px and above */}
-            <div className="hidden xl:block overflow-x-auto mt-6">
-              <div className="shadow-lg rounded-xl border overflow-hidden bg-white border-gray-200">
-                <table className="min-w-full border-collapse">
-                  <thead className="bg-gradient-to-r from-blue-700 to-purple-600 text-white sticky top-0 z-10">
-                    <tr>
-                      <th className="py-3 px-6 text-center text-sm font-semibold">
-                        Title
-                      </th>
-                      <th className="py-3 px-6 text-center text-sm font-semibold">
-                        Assignee
-                      </th>
-                      <th className="py-3 px-6 text-center text-sm font-semibold">
-                        Priority
-                      </th>
-                      <th className="py-3 px-6 text-center text-sm font-semibold">
-                        Status
-                      </th>
-                      <th className="py-3 px-6 text-center text-sm font-semibold">
-                        Due Date
-                      </th>
-                      <th className="py-3 px-6 text-center text-sm font-semibold">
-                        Actions
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {currentTasks.map((task, index) => (
-                      <tr
-                        key={task.id}
-                        className={`transition-all duration-200 ${
-                          index % 2 === 0 ? "bg-gray-50" : "bg-white"
-                        } hover:bg-indigo-50`}
-                      >
-                        <td className="px-6 py-3 text-center text-sm font-medium">
-                          {task.title}
-                        </td>
-                        <td className="px-6 py-3 text-center text-sm font-medium">
-                          {task.assignedTo?.name || "Unassigned"}
-                        </td>
-                        <td className="px-6 py-3 text-center">
-                          <span
-                            className={`px-3 py-1 text-xs rounded border font-medium ${getPriorityColor(
-                              task.priority
-                            )}`}
-                          >
-                            {task.priority}
-                          </span>
-                        </td>
-                        <td className="px-6 py-3 text-center">
-                          <span
-                            className={`px-3 py-1 text-xs rounded border font-medium ${getStatusColor(
-                              task.status
-                            )}`}
-                          >
-                            {task.status}
-                          </span>
-                        </td>
-                        <td className="px-6 py-3 text-center text-sm">
-                          {task.dueDate
-                            ? new Date(task.dueDate).toLocaleDateString()
-                            : "DD/MM/YYYY"}
-                        </td>
-                        <td className="px-6 py-3 text-center">
-                          <div className="inline-flex justify-center space-x-2">
-                            <div className="relative group">
-                              <button
-                                onClick={() => handleDetail(task.id)}
-                                className="p-2 rounded-full bg-blue-50 border text-blue-600 hover:bg-blue-100 transition-colors"
-                              >
-                                <Eye className="h-4 w-4" />
-                              </button>
-                              <span className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 text-xs text-white bg-gray-900 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none z-20">
-                                View Details
-                              </span>
-                            </div>
-
-                            <div className="relative group">
-                              <button
-                                onClick={() => handleEdit(task.id)}
-                                className="p-2 rounded-full bg-yellow-50 border text-yellow-600 hover:bg-yellow-100 transition-colors"
-                              >
-                                <Edit className="h-4 w-4" />
-                              </button>
-                              <span className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 text-xs text-white bg-gray-900 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none z-20">
-                                Edit Task
-                              </span>
-                            </div>
-
-                            <div className="relative group">
-                              <button 
-                                onClick={() => handleDelete(task.id)}
-                                className="p-2 rounded-full bg-red-50 border text-red-600 hover:bg-red-100 transition-colors"
-                              >
-                                <Trash2 className="h-4 w-4" />
-                              </button>
-                              <span className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 text-xs text-white bg-gray-900 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none z-20">
-                                Delete Task
-                              </span>
-                            </div>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+            {loading ? (
+              <Loader />
+            ) : currentTasks.length === 0 ? (
+              <div className="min-h-[60vh] flex items-center justify-center">
+                <div className="text-center">
+                  <p className="text-gray-500 text-lg">No Task found.</p>
+                </div>
               </div>
-            </div>
+            ) : (
+              <>
+                {/* Table (Desktop) - Shows at 1280px and above */}
+                <div className="hidden xl:block overflow-x-auto mt-6">
+                  <div className="shadow-lg rounded-xl border overflow-hidden bg-white border-gray-200">
+                    <table className="min-w-full border-collapse">
+                      <thead className="bg-gradient-to-r from-blue-700 to-purple-600 text-white sticky top-0 z-10">
+                        <tr>
+                          <th className="py-3 px-6 text-center text-sm font-semibold">
+                            Title
+                          </th>
+                          <th className="py-3 px-6 text-center text-sm font-semibold">
+                            Assignee
+                          </th>
+                          <th className="py-3 px-6 text-center text-sm font-semibold">
+                            Priority
+                          </th>
+                          <th className="py-3 px-6 text-center text-sm font-semibold">
+                            Status
+                          </th>
+                          <th className="py-3 px-6 text-center text-sm font-semibold">
+                            Due Date
+                          </th>
+                          <th className="py-3 px-6 text-center text-sm font-semibold">
+                            Actions
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {currentTasks.map((task, index) => (
+                          <tr
+                            key={task.id}
+                            className={`transition-all duration-200 ${
+                              index % 2 === 0 ? "bg-gray-50" : "bg-white"
+                            } hover:bg-indigo-50`}
+                          >
+                            <td className="px-6 py-3 text-center text-sm font-medium">
+                              {task.title}
+                            </td>
+                            <td className="px-6 py-3 text-center text-sm font-medium">
+                              {task.assignedTo?.name || "Unassigned"}
+                            </td>
+                            <td className="px-6 py-3 text-center">
+                              <span
+                                className={`px-3 py-1 text-xs rounded border font-medium ${getPriorityColor(
+                                  task.priority
+                                )}`}
+                              >
+                                {task.priority}
+                              </span>
+                            </td>
+                            <td className="px-6 py-3 text-center">
+                              <span
+                                className={`px-3 py-1 text-xs rounded border font-medium ${getStatusColor(
+                                  task.status
+                                )}`}
+                              >
+                                {task.status}
+                              </span>
+                            </td>
+                            <td className="px-6 py-3 text-center text-sm">
+                              {task.dueDate
+                                ? new Date(task.dueDate).toLocaleDateString()
+                                : "DD/MM/YYYY"}
+                            </td>
+                            <td className="px-6 py-3 text-center">
+                              <div className="inline-flex justify-center space-x-2">
+                                <div className="relative group">
+                                  <button
+                                    onClick={() => handleDetail(task.id)}
+                                    className="p-2 rounded-full bg-blue-50 border text-blue-600 hover:bg-blue-100 transition-colors"
+                                  >
+                                    <Eye className="h-4 w-4" />
+                                  </button>
+                                  <span className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 text-xs text-white bg-gray-900 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none z-20">
+                                    View Details
+                                  </span>
+                                </div>
 
-            {/* Mobile Card View - Shows below 1280px */}
-            <div className="space-y-4 xl:hidden mt-6">
-              {currentTasks.map((task) => (
-                <div
-                  key={task.id}
-                  className="bg-white rounded-xl shadow-lg border border-gray-200 p-4"
-                >
-                  <div className="flex justify-between items-center mb-2">
-                    <h3 className="font-semibold text-gray-900 text-sm sm:text-base">
-                      {task.title}
-                    </h3>
-                    <span
-                      className={`px-3 py-1 text-xs rounded border font-medium ${getPriorityColor(
-                        task.priority
-                      )}`}
-                    >
-                      {task.priority}
-                    </span>
-                  </div>
-                  <div className="text-xs sm:text-sm font-medium text-gray-600 space-y-2">
-                    <div className="flex items-center gap-2">
-                      <User className="w-4 h-4 text-gray-500" />
-                      <span>{task.assignedTo?.name || "Unassigned"}</span>
-                    </div>
+                                <div className="relative group">
+                                  <button
+                                    onClick={() => handleEdit(task.id)}
+                                    className="p-2 rounded-full bg-yellow-50 border text-yellow-600 hover:bg-yellow-100 transition-colors"
+                                  >
+                                    <Edit className="h-4 w-4" />
+                                  </button>
+                                  <span className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 text-xs text-white bg-gray-900 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none z-20">
+                                    Edit Task
+                                  </span>
+                                </div>
 
-                    <div className="flex items-center gap-2">
-                      <Calendar className="w-4 h-4 text-black-500" />
-                      <span>
-                        {task.dueDate
-                          ? new Date(task.dueDate).toLocaleDateString()
-                          : "DD/MM/YYYY"}
-                      </span>
-                    </div>
-                  </div>
-                  <div className="flex justify-between items-center mt-3">
-                    <span
-                      className={`px-3 py-1 text-xs border rounded font-medium ${getStatusColor(
-                        task.status
-                      )}`}
-                    >
-                      {task.status}
-                    </span>
-                    <div className="flex space-x-2">
-                      <div className="relative group">
-                        <button
-                          onClick={() => handleDetail(task.id)}
-                          className="p-1.5 rounded-full bg-blue-50 border text-blue-600 hover:bg-blue-100 transition-colors"
-                        >
-                          <Eye className="h-4 w-4" /> 
-                        </button>
-                        <span className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 text-xs text-white bg-gray-900 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none z-20">
-                          View Details
-                        </span>
-                      </div>
-
-                      <div className="relative group">
-                        <button
-                          onClick={() => handleEdit(task.id)}
-                          className="p-1.5 rounded-full bg-yellow-50 border text-yellow-600 hover:bg-yellow-100 transition-colors"
-                        >
-                          <Edit className="h-4 w-4" />
-                        </button>
-                        <span className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 text-xs text-white bg-gray-900 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none z-20">
-                          Edit Task
-                        </span>
-                      </div>
-
-                      <div className="relative group">
-                        <button 
-                          onClick={() => handleDelete(task.id)}
-                          className="p-1.5 rounded-full bg-red-50 border text-red-600 hover:bg-red-100 transition-colors"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </button>
-                        <span className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 text-xs text-white bg-gray-900 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none z-20">
-                          Delete Task
-                        </span>
-                      </div>
-                    </div>
+                                <div className="relative group">
+                                  <button
+                                    onClick={() => handleDelete(task.id)}
+                                    className="p-2 rounded-full bg-red-50 border text-red-600 hover:bg-red-100 transition-colors"
+                                  >
+                                    <Trash2 className="h-4 w-4" />
+                                  </button>
+                                  <span className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 text-xs text-white bg-gray-900 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none z-20">
+                                    Delete Task
+                                  </span>
+                                </div>
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
                   </div>
                 </div>
-              ))}
-            </div>
 
-            {/* Pagination */}
-            <div className="flex justify-center items-center mt-8 space-x-2">
-              <button
-                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-                disabled={currentPage === 1}
-                className="w-10 h-10 flex items-center justify-center rounded-full text-sm bg-gray-800 text-white hover:bg-gray-700 disabled:opacity-50"
-              >
-                <ChevronLeft className="h-4 w-4" />
-              </button>
+                {/* Mobile Card View - Shows below 1280px */}
+                <div className="space-y-4 xl:hidden max-h-[65vh] overflow-y-auto pr-1.5 scrollbar-thin mt-6">
+                  {currentTasks.map((task) => (
+                    <div
+                      key={task.id}
+                      className="bg-white rounded-xl shadow-lg border border-gray-200 p-4"
+                    >
+                      <div className="flex justify-between items-center mb-2">
+                        <h3 className="font-semibold text-gray-900 text-sm sm:text-base">
+                          {task.title}
+                        </h3>
+                        <span
+                          className={`px-3 py-1 text-xs rounded border font-medium ${getPriorityColor(
+                            task.priority
+                          )}`}
+                        >
+                          {task.priority}
+                        </span>
+                      </div>
+                      <div className="text-xs sm:text-sm font-medium text-gray-600 space-y-2">
+                        <div className="flex items-center gap-2">
+                          <User className="w-4 h-4 text-gray-500" />
+                          <span>{task.assignedTo?.name || "Unassigned"}</span>
+                        </div>
 
-              {[...Array(totalPages)].map((_, i) => (
-                <button
-                  key={i}
-                  onClick={() => setCurrentPage(i + 1)}
-                  className={`w-10 h-10 flex items-center justify-center rounded-full text-sm font-medium transition-all
+                        <div className="flex items-center gap-2">
+                          <Calendar className="w-4 h-4 text-black-500" />
+                          <span>
+                            {task.dueDate
+                              ? new Date(task.dueDate).toLocaleDateString()
+                              : "DD/MM/YYYY"}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="flex justify-between items-center mt-3">
+                        <span
+                          className={`px-3 py-1 text-xs border rounded font-medium ${getStatusColor(
+                            task.status
+                          )}`}
+                        >
+                          {task.status}
+                        </span>
+                        <div className="flex space-x-2">
+                          <div className="relative group">
+                            <button
+                              onClick={() => handleDetail(task.id)}
+                              className="p-1.5 rounded-full bg-blue-50 border text-blue-600 hover:bg-blue-100 transition-colors"
+                            >
+                              <Eye className="h-4 w-4" />
+                            </button>
+                            <span className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 text-xs text-white bg-gray-900 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none z-20">
+                              View Details
+                            </span>
+                          </div>
+
+                          <div className="relative group">
+                            <button
+                              onClick={() => handleEdit(task.id)}
+                              className="p-1.5 rounded-full bg-yellow-50 border text-yellow-600 hover:bg-yellow-100 transition-colors"
+                            >
+                              <Edit className="h-4 w-4" />
+                            </button>
+                            <span className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 text-xs text-white bg-gray-900 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none z-20">
+                              Edit Task
+                            </span>
+                          </div>
+
+                          <div className="relative group">
+                            <button
+                              onClick={() => handleDelete(task.id)}
+                              className="p-1.5 rounded-full bg-red-50 border text-red-600 hover:bg-red-100 transition-colors"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </button>
+                            <span className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 text-xs text-white bg-gray-900 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none z-20">
+                              Delete Task
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Pagination */}
+                <div className="flex justify-center items-center mt-8 space-x-2">
+                  <button
+                    onClick={() =>
+                      setCurrentPage((prev) => Math.max(prev - 1, 1))
+                    }
+                    disabled={currentPage === 1}
+                    className="w-10 h-10 flex items-center justify-center rounded-full text-sm bg-gray-800 text-white hover:bg-gray-700 disabled:opacity-50"
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                  </button>
+
+                  {[...Array(totalPages)].map((_, i) => (
+                    <button
+                      key={i}
+                      onClick={() => setCurrentPage(i + 1)}
+                      className={`w-10 h-10 flex items-center justify-center rounded-full text-sm font-medium transition-all
                   ${
                     currentPage === i + 1
                       ? "bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-md"
                       : "bg-gray-600 text-gray-200 hover:bg-gray-700"
                   }`}
-                >
-                  {i + 1}
-                </button>
-              ))}
+                    >
+                      {i + 1}
+                    </button>
+                  ))}
 
-              <button
-                onClick={() =>
-                  setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-                }
-                disabled={currentPage === totalPages}
-                className="w-10 h-10 flex items-center justify-center rounded-full text-sm bg-gray-800 text-white hover:bg-gray-700 disabled:opacity-50"
-              >
-                <ChevronRight className="h-4 w-4" />
-              </button>
-            </div>
+                  <button
+                    onClick={() =>
+                      setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                    }
+                    disabled={currentPage === totalPages}
+                    className="w-10 h-10 flex items-center justify-center rounded-full text-sm bg-gray-800 text-white hover:bg-gray-700 disabled:opacity-50"
+                  >
+                    <ChevronRight className="h-4 w-4" />
+                  </button>
+                </div>
+              </>
+            )}
           </main>
 
           {/* Snackbar for successful deletion */}

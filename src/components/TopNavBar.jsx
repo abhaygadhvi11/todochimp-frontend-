@@ -35,13 +35,18 @@ const TopNavBar = ({
               <Menu className="h-5 w-5 text-black" />
             </button>
 
-            <div className="flex items-center ml-2 md:ml-0">
-              <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-sm">TC</span>
-              </div>
-              <span className="ml-2 text-xl font-semibold hidden md:inline">
-                TodoChimp
-              </span>
+            <div className="flex items-center">
+              <Link
+                to="/dashboard"
+                className="flex items-center group cursor-pointer"
+              >
+                <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center group-hover:opacity-90 transition">
+                  <span className="text-white font-bold text-sm">TC</span>
+                </div>
+                <span className="ml-2 text-xl font-semibold hidden md:inline text-gray-800 group-hover:text-gray-900">
+                  TodoChimp
+                </span>
+              </Link>
             </div>
           </div>
 
@@ -49,7 +54,16 @@ const TopNavBar = ({
           <div className="flex items-center space-x-3">
             <div className="relative" ref={userMenuRef}>
               <button
-                onClick={() => setShowUserMenu((prev) => !prev)}
+                onClick={() => {
+                  if (showMobileSidebar) {
+                    setShowMobileSidebar(false);
+                    setTimeout(() => {
+                      setShowUserMenu(true);
+                    }, 50);
+                  } else {
+                    setShowUserMenu((prev) => !prev);
+                  }
+                }}
                 className="group flex items-center gap-3 px-3 py-2 rounded-lg w-full transition-all duration-200 
                           text-gray-700 hover:bg-gray-100"
               >

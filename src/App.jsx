@@ -1,4 +1,3 @@
-// App.jsx
 import {
   BrowserRouter as Router,
   Routes,
