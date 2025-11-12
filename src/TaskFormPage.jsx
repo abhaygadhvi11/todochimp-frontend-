@@ -8,16 +8,18 @@ import {
   X,
   Save,
   Plus,
-  Edit3,
   Clock,
   Flag,
   Trash2,
   Mail,
   Users,
   RotateCcw,
+  ArrowLeft,
 } from "lucide-react";
 import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
+
+const API_URL = import.meta.env.VITE_API_URL;
 
 const TaskFormPage = ({ mode }) => {
   const titleRef = useRef(null);
@@ -68,7 +70,7 @@ const TaskFormPage = ({ mode }) => {
     const fetchUser = async () => {
       try {
         if (!token) return;
-        const res = await fetch("http://localhost:3000/api/auth/me", {
+        const res = await fetch(`${API_URL}/api/auth/me`, {
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
@@ -179,7 +181,7 @@ const TaskFormPage = ({ mode }) => {
     if (isEdit && field === "raciRole" && assignment.id) {
       try {
         const res = await fetch(
-          `http://localhost:3000/api/assignments/${assignment.id}`,
+          `${API_URL}/api/assignments/${assignment.id}`,
           {
             method: "PUT",
             headers: {
@@ -198,7 +200,7 @@ const TaskFormPage = ({ mode }) => {
         }
 
         const result = await res.json();
-        console.log("✅ RACI role updated:", result);
+        console.log("RACI role updated:", result);
 
         // Show success snackbar
         setShowRaciSnackbar(true);
@@ -228,7 +230,7 @@ const TaskFormPage = ({ mode }) => {
       // If it's edit mode and assignment has an ID, call the DELETE API
       if (isEdit && assignment.id) {
         const res = await fetch(
-          `http://localhost:3000/api/assignments/${assignment.id}`,
+          `${API_URL}/api/assignments/${assignment.id}`,
           {
             method: "DELETE",
             headers: {
@@ -263,7 +265,7 @@ const TaskFormPage = ({ mode }) => {
   const fetchTaskData = async () => {
     if (!taskId || !token) return;
     try {
-      const res = await fetch(`http://localhost:3000/api/tasks/${taskId}`, {
+      const res = await fetch(`${API_URL}/api/tasks/${taskId}`, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
@@ -290,7 +292,7 @@ const TaskFormPage = ({ mode }) => {
       // Fetch RACI assignments
       try {
         const raciRes = await fetch(
-          `http://localhost:3000/api/tasks/${taskId}/raci`,
+          `${API_URL}/api/tasks/${taskId}/raci`,
           {
             headers: {
               "Content-Type": "application/json",
@@ -333,11 +335,11 @@ const TaskFormPage = ({ mode }) => {
     setSaveLoading(true);
 
     try {
-      let url = `http://localhost:3000/api/tasks`;
+      let url = `${API_URL}/api/tasks`;
       let method = "POST";
 
       if (isEdit && taskId) {
-        url = `http://localhost:3000/api/tasks/${taskId}`;
+        url = `${API_URL}/api/tasks/${taskId}`;
         method = "PUT";
       }
 
@@ -410,7 +412,7 @@ const TaskFormPage = ({ mode }) => {
         if (newAssignments.length > 0) {
           try {
             const raciRes = await fetch(
-              `http://localhost:3000/api/tasks/${taskId}/raci`,
+              `${API_URL}/api/tasks/${taskId}/raci`,
               {
                 method: "POST",
                 headers: {
@@ -513,23 +515,27 @@ const TaskFormPage = ({ mode }) => {
             <div className="bg-white rounded-xl shadow-lg border border-gray-200">
               {/* Enhanced Header */}
               <div className="border-b rounded-xl border-gray-200 px-6 py-4 bg-gradient-to-r from-blue-600 to-purple-600">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-3">
-                    {isEdit ? (
-                      <Edit3 className="w-6 h-6 text-white" />
-                    ) : (
-                      <Plus className="w-6 h-6 text-white" />
-                    )}
-                    <h1 className="text-2xl font-bold text-white">
-                      {isEdit ? "Edit Task" : "Create New Task"}
-                    </h1>
-                    {isDirty && (
-                      <div
-                        className="w-2 h-2 bg-orange-400 rounded-full animate-pulse"
-                        title="Unsaved changes"
-                      />
-                    )}
-                  </div>
+                <div className="flex items-center space-x-3">
+                  {/* Back Button */}
+                  <button
+                    onClick={() => navigate(-1)}
+                    className="p-2 rounded-md text-white hover:bg-white/10 transition"
+                  >
+                    <ArrowLeft className="w-6 h-6" />
+                  </button>
+
+                  {/* Title */}
+                  <h1 className="text-2xl font-bold text-white">
+                    {isEdit ? "Edit Task" : "Create New Task"}
+                  </h1>
+
+                  {/* Unsaved Indicator */}
+                  {isDirty && (
+                    <div
+                      className="w-2 h-2 bg-orange-400 rounded-full animate-pulse"
+                      title="Unsaved changes"
+                    />
+                  )}
                 </div>
               </div>
 

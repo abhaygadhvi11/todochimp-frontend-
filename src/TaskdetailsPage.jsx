@@ -11,6 +11,8 @@ import {
 import AttachmentsSection from "./components/AttachmentsSection";
 import CommentsSection from "./components/CommentsSection";
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 const TaskDetailScreen = () => {
   const { taskId } = useParams();
   const navigate = useNavigate();
@@ -26,9 +28,9 @@ const TaskDetailScreen = () => {
   });
   const token = localStorage.getItem("token");
 
-  const userMenuRef = useRef(null); // ✅ for outside click
+  const userMenuRef = useRef(null); 
 
-  // 🔹 Close dropdown when clicking outside
+  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (userMenuRef.current && !userMenuRef.current.contains(event.target)) {
@@ -39,7 +41,7 @@ const TaskDetailScreen = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // 🔹 Close dropdown on ESC
+  // Close dropdown on ESC
   useEffect(() => {
     const handleEsc = (event) => {
       if (event.key === "Escape") setShowUserMenu(false);
@@ -55,7 +57,7 @@ const TaskDetailScreen = () => {
 
     try {
       const res = await fetch(
-        `http://localhost:3000/api/tasks/${taskId}/attachments`,
+        `${API_URL}/api/tasks/${taskId}/attachments`,
         {
           method: "POST",
           headers: { Authorization: `Bearer ${token}` },
@@ -75,7 +77,7 @@ const TaskDetailScreen = () => {
   const fetchAttachments = async () => {
     try {
       const res = await fetch(
-        `http://localhost:3000/api/tasks/${taskId}/attachments`,
+        `${API_URL}/api/tasks/${taskId}/attachments`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -96,7 +98,7 @@ const TaskDetailScreen = () => {
     if (!commentText.trim()) return;
     try {
       const res = await fetch(
-        `http://localhost:3000/api/tasks/${taskId}/comments`,
+        `${API_URL}/api/tasks/${taskId}/comments`,
         {
           method: "POST",
           headers: {
@@ -117,7 +119,7 @@ const TaskDetailScreen = () => {
   const fetchComments = async () => {
     try {
       const res = await fetch(
-        `http://localhost:3000/api/tasks/${taskId}/comments`,
+        `${API_URL}/api/tasks/${taskId}/comments`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -137,7 +139,7 @@ const TaskDetailScreen = () => {
   useEffect(() => {
     const fetchTaskDetails = async () => {
       try {
-        const res = await fetch(`http://localhost:3000/api/tasks/${taskId}`, {
+        const res = await fetch(`${API_URL}/api/tasks/${taskId}`, {
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",

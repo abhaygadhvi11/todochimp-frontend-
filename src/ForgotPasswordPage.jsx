@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Mail } from "lucide-react";
 import { Link } from "react-router-dom";
 
-const API_URL = "http://localhost:3000";
+const API_URL = import.meta.env.VITE_API_URL;
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");

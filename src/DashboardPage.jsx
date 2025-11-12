@@ -16,6 +16,8 @@ import {
 import { useNavigate } from "react-router-dom";
 import TopNavBar from "./components/TopNavBar";
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 const DashboardPage = () => {
   const [tasks, setTasks] = useState([]);
   const [filteredTasks, setFilteredTasks] = useState([]);
@@ -39,7 +41,7 @@ const DashboardPage = () => {
     const fetchTasks = async () => {
       try {
         setLoading(true);
-        const res = await fetch("http://localhost:3000/api/tasks", {
+        const res = await fetch(`${API_URL}/api/tasks`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
@@ -71,7 +73,7 @@ const DashboardPage = () => {
     if (!window.confirm("Are you sure you want to delete this task?")) return;
 
     try {
-      const res = await fetch(`http://localhost:3000/api/tasks/${taskId}`, {
+      const res = await fetch(`${API_URL}/api/tasks/${taskId}`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",

@@ -102,13 +102,13 @@ const TopNavBar = ({
                     </div>
                   </div>
 
-                  <Link
+                  {/* <Link
                     to="/profile"
                     className="block px-4 py-2 text-sm hover:bg-gray-100"
                     onClick={() => setShowUserMenu(false)} // close on click
                   >
                     Profile
-                  </Link>
+                  </Link> */}
 
                   <button
                     onClick={() => {

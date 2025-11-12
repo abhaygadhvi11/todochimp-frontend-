@@ -11,6 +11,8 @@ import {
   Trash2,
 } from "lucide-react";
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 const getFileIcon = (fileName) => {
   const ext = fileName.split(".").pop().toLowerCase();
   switch (ext) {
@@ -86,7 +88,7 @@ const AttachmentsSection = ({
       const token = localStorage.getItem("token");
 
       const res = await fetch(
-        `http://localhost:3000/api/tasks/${taskId}/attachments?attachmentId=${attachmentId}`,
+        `${API_URL}/api/tasks/${taskId}/attachments?attachmentId=${attachmentId}`,
         {
           method: "DELETE",
           headers: {
