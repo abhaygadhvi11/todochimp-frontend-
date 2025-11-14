@@ -27,8 +27,8 @@ const CommentsSection = ({ comments = [], onAddComment }) => {
     <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
       {/* Header */}
       <div className="flex items-center gap-2 mb-4">
-        <MessageSquare className="w-5 h-5 text-gray-400" />
-        <h1 className="text-xl font-semibold">Comments ({comments.length})</h1>
+        {/* <MessageSquare className="w-5 h-5 text-gray-400" /> */}
+        <h1 className="text-lg font-semibold">COMMENTS ({comments.length})</h1>
       </div>
 
       {/* Comment List */} 

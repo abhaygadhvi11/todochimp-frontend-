@@ -344,22 +344,22 @@ const DashboardPage = () => {
                       <thead className="bg-gradient-to-r from-blue-700 to-purple-600 text-white sticky top-0 z-10">
                         <tr>
                           <th className="py-3 px-6 text-center text-sm font-semibold">
-                            Title
+                            TITLE
                           </th>
                           <th className="py-3 px-6 text-center text-sm font-semibold">
-                            Assignee
+                            ASSIGNED TO
                           </th>
                           <th className="py-3 px-6 text-center text-sm font-semibold">
-                            Priority
+                            PRIORITY
                           </th>
                           <th className="py-3 px-6 text-center text-sm font-semibold">
-                            Status
+                            STATUS
                           </th>
                           <th className="py-3 px-6 text-center text-sm font-semibold">
-                            Due Date
+                            DUE DATE
                           </th>
                           <th className="py-3 px-6 text-center text-sm font-semibold">
-                            Actions
+                            ACTIONS
                           </th>
                         </tr>
                       </thead>

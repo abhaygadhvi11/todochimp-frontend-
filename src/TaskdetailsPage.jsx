@@ -340,7 +340,7 @@ const TaskDetailScreen = () => {
               <div className="flex items-center gap-3">
                 <Calendar className="w-5 h-5 text-gray-400" />
                 <div>
-                  <p className="text-xs text-gray-500">Due Date</p>
+                  <p className="text-xs text-gray-500">DUE DATE</p>
                   <p className="text-sm font-medium text-gray-800">
                     {task.dueDate
                       ? new Date(task.dueDate).toLocaleDateString()
@@ -352,7 +352,7 @@ const TaskDetailScreen = () => {
               <div className="flex items-center gap-3">
                 <User className="w-5 h-5 text-gray-400" />
                 <div>
-                  <p className="text-xs text-gray-500">Assignee</p>
+                  <p className="text-xs text-gray-500">ASSIGNED TO</p>
                   <p className="text-sm font-medium text-gray-800">
                     {task.assignedTo?.name || "Unassigned"}
                   </p>
@@ -362,7 +362,7 @@ const TaskDetailScreen = () => {
               <div className="flex items-center gap-3">
                 <User className="w-5 h-5 text-gray-400" />
                 <div>
-                  <p className="text-xs text-gray-500">Created By</p>
+                  <p className="text-xs text-gray-500">CREATED BY</p>
                   <p className="text-sm font-medium text-gray-800">
                     {task.createdBy?.name || "—"}
                   </p>
@@ -372,7 +372,7 @@ const TaskDetailScreen = () => {
               <div className="flex items-center gap-3">
                 <Calendar className="w-5 h-5 text-gray-400" />
                 <div>
-                  <p className="text-xs text-gray-500">Created On</p>
+                  <p className="text-xs text-gray-500">CREATED AT</p>
                   <p className="text-sm font-medium text-gray-800">
                     {new Date(task.createdAt).toLocaleDateString()}
                   </p>

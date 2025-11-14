@@ -117,10 +117,10 @@ const AttachmentsSection = ({
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
-          <Paperclip className="w-5 h-5 text-gray-400" />
-          <h2 className="text-lg font-semibold text-gray-900">
-            Attachments ({attachments.length})
-          </h2>
+          {/* <Paperclip className="w-5 h-5 text-gray-400" /> */}
+          <h1 className="text-lg font-semibold text-gray-900">
+            ATTACHMENTS ({attachments.length})
+          </h1>
         </div>
         <div>
           <input
@@ -256,13 +256,13 @@ const AttachmentsSection = ({
                       #
                     </th>
                     <th className="py-4 px-6 text-left text-m font-semibold">
-                      File Name
+                      FILE NAME
                     </th>
                     <th className="py-4 px-6 text-center text-m font-semibold">
-                      Uploaded Date
+                      UPLOADED DATE
                     </th>
                     <th className="py-4 px-6 text-center text-m font-semibold">
-                      Actions
+                      ACTIONS
                     </th>
                   </tr>
                 </thead>
