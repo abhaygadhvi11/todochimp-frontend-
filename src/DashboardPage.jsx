@@ -396,7 +396,7 @@ const DashboardPage = () => {
                               </span>
                             </td>
                             <td className="px-6 py-3 text-center text-sm">
-                              {task.dueDate
+                              {task.dueDate 
                                 ? new Date(task.dueDate).toLocaleDateString()
                                 : "DD/MM/YYYY"}
                             </td>
