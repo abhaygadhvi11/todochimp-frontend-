@@ -44,7 +44,7 @@ const TopNavBar = ({
                   <span className="text-white font-bold text-sm">TC</span>
                 </div>
                 <span className="ml-2 text-xl font-semibold hidden md:inline text-gray-800 group-hover:text-gray-900">
-                  TodoChimp
+                  TODOCHIMP
                 </span>
               </Link>
             </div>

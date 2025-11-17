@@ -234,7 +234,7 @@ const DashboardPage = () => {
                     <span className="text-white font-bold text-sm">TC</span>
                   </div>
                   <span className="text-lg font-semibold text-gray-800">
-                    TodoChimp
+                    TODOCHIMP
                   </span>
                 </div>
               </div>

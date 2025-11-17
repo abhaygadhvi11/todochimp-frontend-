@@ -26,7 +26,7 @@ const CommentsSection = ({ comments = [], onAddComment }) => {
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
       {/* Header */}
-      <div className="flex items-center gap-2 mb-4">
+      <div className="flex items-center gap-2 mb-4 border-b border-gray-200 pb-3">
         {/* <MessageSquare className="w-5 h-5 text-gray-400" /> */}
         <h1 className="text-lg font-semibold">COMMENTS ({comments.length})</h1>
       </div>
@@ -86,7 +86,7 @@ const CommentsSection = ({ comments = [], onAddComment }) => {
               <button
                 onClick={handlePost}
                 disabled={loading}
-                className={`flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-1.5 rounded-md transition-colors ${
+                className={`flex items-center gap-1.5 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white text-sm font-medium px-4 py-1.5 rounded-md transition-colors ${
                   loading ? "opacity-70 cursor-not-allowed" : ""
                 }`}
               >

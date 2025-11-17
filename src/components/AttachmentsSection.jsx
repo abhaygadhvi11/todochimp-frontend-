@@ -115,9 +115,8 @@ const AttachmentsSection = ({
   return (
     <div className="bg-white border border-gray-200 rounded-lg p-5 shadow-sm">
       {/* Header */}
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between mb-4 border-b border-gray-200 pb-3">
         <div className="flex items-center gap-2">
-          {/* <Paperclip className="w-5 h-5 text-gray-400" /> */}
           <h1 className="text-lg font-semibold text-gray-900">
             ATTACHMENTS ({attachments.length})
           </h1>
@@ -132,7 +131,7 @@ const AttachmentsSection = ({
           />
           <button
             onClick={() => fileInputRef.current.click()}
-            className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-colors"
+            className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 rounded-md transition-colors"
           >
             <Upload className="w-4 h-4" />
             <span className="hidden sm:inline">Add Files</span>
