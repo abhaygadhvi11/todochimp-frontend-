@@ -86,7 +86,7 @@ const CommentsSection = ({ comments = [], onAddComment }) => {
               <button
                 onClick={handlePost}
                 disabled={loading}
-                className={`flex items-center gap-1.5 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white text-sm font-medium px-4 py-1.5 rounded-md transition-colors ${
+                className={`flex items-center gap-1.5 cursor-pointer bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white text-sm font-medium px-4 py-1.5 rounded-md transition-colors ${
                   loading ? "opacity-70 cursor-not-allowed" : ""
                 }`}
               >

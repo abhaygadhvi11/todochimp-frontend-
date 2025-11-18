@@ -14,3 +14,9 @@
 .animate-fade-in-up {
   animation: fadeInUp 0.4s ease-out;
 }
+
+/* Make the native datepicker icon show pointer cursor */
+input[type="date"]::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+}
+

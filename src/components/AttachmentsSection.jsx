@@ -131,7 +131,7 @@ const AttachmentsSection = ({
           />
           <button
             onClick={() => fileInputRef.current.click()}
-            className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 rounded-md transition-colors"
+            className="flex items-center cursor-pointer gap-2 px-3 py-1.5 text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 rounded-md transition-colors"
           >
             <Upload className="w-4 h-4" />
             <span className="hidden sm:inline">Add Files</span>
@@ -162,7 +162,7 @@ const AttachmentsSection = ({
                 <div className="relative group">
                   <button
                     onClick={() => handleRemovePending(file.name)}
-                    className="p-1 hover:bg-gray-100 rounded-md flex-shrink-0"
+                    className="p-1 hover:bg-gray-100 rounded-md cursor-pointer flex-shrink-0"
                   >
                     <X className="w-3.5 h-3.5 text-red-500" />
                   </button>
@@ -178,7 +178,7 @@ const AttachmentsSection = ({
             <button
               onClick={handleSubmit}
               disabled={uploading}
-              className={`px-4 py-1.5 rounded-md text-white text-sm font-medium bg-blue-600 hover:bg-blue-700 transition-colors ${
+              className={`px-4 py-1.5 rounded-md text-white text-sm cursor-pointer font-medium bg-blue-600 hover:bg-blue-700 transition-colors ${
                 uploading ? "opacity-70 cursor-not-allowed" : ""
               }`}
             >
@@ -305,7 +305,7 @@ const AttachmentsSection = ({
                                   attachment.fileName
                                 )
                               }
-                              className="p-2 rounded-full bg-blue-50 border text-blue-600 hover:bg-blue-100 transition-colors"
+                              className="p-2 rounded-full cursor-pointer bg-blue-50 border text-blue-600 hover:bg-blue-100 transition-colors"
                             >
                               <Download className="h-4 w-4" />
                             </button>
@@ -318,7 +318,7 @@ const AttachmentsSection = ({
                           <div className="relative group">
                             <button
                               onClick={() => handleDelete(attachment.id)}
-                              className="p-2 rounded-full bg-red-50 border text-red-600 hover:bg-red-100 transition-colors"
+                              className="p-2 rounded-full cursor-pointer bg-red-50 border text-red-600 hover:bg-red-100 transition-colors"
                             >
                               <Trash2 className="h-4 w-4" />
                             </button>

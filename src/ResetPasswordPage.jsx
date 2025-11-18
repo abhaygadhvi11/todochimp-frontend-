@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom"; 
 import { Eye, EyeOff, Lock, Shield } from "lucide-react";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
-export default function ResetPasswordPage({ onBackToLogin }) {
+export default function ResetPasswordPage() {
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
   const token = searchParams.get("token");
 
   const [formData, setFormData] = useState({
@@ -89,8 +90,8 @@ export default function ResetPasswordPage({ onBackToLogin }) {
         );
         setFormData({ newPassword: "", confirmPassword: "" });
         setTimeout(() => {
-          if (onBackToLogin) onBackToLogin();
-        }, 3000);
+          navigate("/login");
+        }, 1000);
       } else {
         setMessage(data.error || data.message || "Failed to reset password");
       }
@@ -106,7 +107,7 @@ export default function ResetPasswordPage({ onBackToLogin }) {
     <button
       type="button"
       onClick={onClick}
-      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none transition-colors"
+      className="absolute right-3 cursor-pointer top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none transition-colors"
     >
       {isVisible ? <Eye className="w-5 h-5" /> : <EyeOff className="w-5 h-5" />}
     </button>
@@ -206,7 +207,7 @@ export default function ResetPasswordPage({ onBackToLogin }) {
           <button
             onClick={handleSubmit}
             disabled={isLoading}
-            className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 disabled:from-gray-400 disabled:to-gray-500 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 hover:scale-[1.02] disabled:cursor-not-allowed shadow-lg"
+            className="w-full bg-gradient-to-r from-blue-600 cursor-pointer to-purple-600 hover:from-blue-700 hover:to-purple-700 disabled:from-gray-400 disabled:to-gray-500 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 hover:scale-[1.02] disabled:cursor-not-allowed shadow-lg"
           >
             {isLoading ? "Resetting..." : "Reset Password"}
           </button>

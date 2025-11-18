@@ -64,7 +64,7 @@ const TopNavBar = ({
                     setShowUserMenu((prev) => !prev);
                   }
                 }}
-                className="group flex items-center gap-3 px-3 py-2 rounded-lg w-full transition-all duration-200 
+                className="group flex items-center gap-3 px-3 py-2 rounded-lg w-full cursor-pointer transition-all duration-200 
                           text-gray-700 hover:bg-gray-100"
               >
                 <div className="p-[2px] rounded-full bg-gradient-to-r from-purple-500 to-blue-500 transition-all duration-300 group-hover:from-blue-500 group-hover:to-purple-500">
@@ -115,7 +115,7 @@ const TopNavBar = ({
                       setShowUserMenu(false);
                       handleLogout();
                     }}
-                    className="block w-full text-left px-4 py-2 text-sm flex items-center text-red-600 hover:bg-red-50 hover:text-red-700"
+                    className="block w-full cursor-pointer text-left px-4 py-2 text-sm flex items-center text-red-600 hover:bg-red-50 hover:text-red-700"
                   >
                     <LogOut className="inline h-4 w-4 mr-2" />
                     Logout

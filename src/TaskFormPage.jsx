@@ -519,7 +519,7 @@ const TaskFormPage = ({ mode }) => {
                   {/* Back Button */}
                   <button
                     onClick={() => navigate(-1)}
-                    className="p-2 rounded-md text-white hover:bg-white/10 transition"
+                    className="p-2 rounded-md cursor-pointer text-white hover:bg-white/10 transition"
                   >
                     <ArrowLeft className="w-6 h-6" />
                   </button>
@@ -772,7 +772,7 @@ const TaskFormPage = ({ mode }) => {
                             ? "border-red-300 focus:ring-red-600 focus:border-red-600"
                             : isAssigneeOnly
                             ? "bg-gray-50 text-gray-500 border-gray-200 cursor-not-allowed"
-                            : "bg-white text-gray-900 border-gray-300 hover:bg-gray-50 focus:ring-blue-600 focus:border-blue-600"
+                            : "bg-white text-gray-900 border-gray-300 hover:bg-gray-50 focus:ring-blue-600 focus:border-blue-600 cursor-pointer"
                         }`}
                       />
                       <div className="absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none">
@@ -943,7 +943,7 @@ const TaskFormPage = ({ mode }) => {
                       type="button"
                       onClick={addRaciAssignment}
                       disabled={isAssigneeOnly}
-                      className="flex items-center justify-center gap-2 px-2 py-2 sm:px-4 sm:py-2 text-sm text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 disabled:bg-gray-300 disabled:cursor-not-allowed font-medium rounded-lg transition-colors shadow-sm"
+                      className="flex items-center cursor-pointer justify-center gap-2 px-2 py-2 sm:px-4 sm:py-2 text-sm text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 disabled:bg-gray-300 disabled:cursor-not-allowed font-medium rounded-lg transition-colors shadow-sm"
                     >
                       <Plus className="w-4 h-4" />
                       {/* Hide text on mobile */}
@@ -985,7 +985,7 @@ const TaskFormPage = ({ mode }) => {
                                   onClick={() => removeRaciAssignment(index)}
                                   disabled={isAssigneeOnly}
                                   title="Remove assignment"
-                                  className="flex items-center justify-center gap-1 px-2 py-1 sm:px-3 sm:py-1.5 text-xs text-red-600 hover:text-white hover:bg-red-600 disabled:opacity-50 disabled:cursor-not-allowed font-medium rounded-md border border-red-200 hover:border-red-600 transition-colors"
+                                  className="flex items-center justify-center cursor-pointer gap-1 px-2 py-1 sm:px-3 sm:py-1.5 text-xs text-red-600 hover:text-white hover:bg-red-600 disabled:opacity-50 disabled:cursor-not-allowed font-medium rounded-md border border-red-200 hover:border-red-600 transition-colors"
                                 >
                                   <Trash2 className="w-3.5 h-3.5" />
                                   {/* Hide text on mobile */}
@@ -1194,7 +1194,7 @@ const TaskFormPage = ({ mode }) => {
                   <button
                     onClick={handleCancel}
                     disabled={isLoading}
-                    className="px-2 sm:px-5 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 transition-all"
+                    className="px-2 sm:px-5 py-2 cursor-pointer border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 transition-all"
                   >
                     <X className="w-4 h-4" />
                     <span className="hidden sm:inline">Cancel</span>
@@ -1204,7 +1204,7 @@ const TaskFormPage = ({ mode }) => {
                   <button
                     onClick={handleSave}
                     disabled={isLoading || !formData.title.trim()}
-                    className="px-3 sm:px-5 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-1 focus:ring-blue-600 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 transition-all"
+                    className="px-3 sm:px-5 py-2 cursor-pointer border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-1 focus:ring-blue-600 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 transition-all"
                   >
                     {isLoading ? (
                       <div className="w-4 h-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
@@ -1236,7 +1236,7 @@ const TaskFormPage = ({ mode }) => {
                   onClick={resetForm}
                   className="w-full text-left px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 hover:bg-gray-100 transition-colors"
                 >
-                  <div className="flex items-center">
+                  <div className="flex items-center cursor-pointer">
                     <Trash2 className="w-4 h-4 mr-3 text-gray-600" />
                     <div>
                       <div className="font-medium text-gray-900">

@@ -118,7 +118,7 @@ export default function SignupPage() {
     <button
       type="button"
       onClick={onClick}
-      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none transition-colors"
+      className="absolute cursor-pointer right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none transition-colors"
     >
       {isVisible ? <Eye className="w-5 h-5" /> : <EyeOff className="w-5 h-5" />}
     </button>
@@ -252,7 +252,7 @@ export default function SignupPage() {
                 name="role"
                 value={formData.role}
                 onChange={handleChange}
-                className={`w-full pl-12 pr-4 py-3 bg-white/60 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all appearance-none ${
+                className={`w-full pl-12 pr-4 py-3 bg-white/60 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all appearance-none cursor-pointer ${
                   errors.role ? "border-red-300" : "border-gray-200"
                 }`}
               >
@@ -314,7 +314,7 @@ export default function SignupPage() {
                 type="checkbox"
                 checked={formData.agreeToTerms}
                 onChange={handleChange}
-                className={`h-4 w-4 mt-1 text-blue-600 focus:ring-blue-500 border-gray-300 rounded ${
+                className={`h-4 w-4 mt-1 text-blue-600 cursor-pointer focus:ring-blue-500 border-gray-300 rounded ${
                   errors.agreeToTerms ? "border-red-300" : ""
                 }`}
               />
@@ -346,7 +346,7 @@ export default function SignupPage() {
           <button
             onClick={handleSubmit}
             disabled={isLoading}
-            className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 disabled:from-gray-400 disabled:to-gray-500 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 hover:scale-[1.02] disabled:cursor-not-allowed shadow-lg"
+            className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 disabled:from-gray-400 disabled:to-gray-500 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 hover:scale-[1.02] disabled:cursor-not-allowed cursor-pointer shadow-lg"
           >
             {isLoading ? "Creating Account..." : "Create Account"}
           </button>

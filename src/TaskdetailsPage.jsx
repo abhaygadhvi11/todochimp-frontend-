@@ -221,7 +221,7 @@ const TaskDetailScreen = () => {
               <div className="flex items-center">
                 <button
                   onClick={() => navigate("/dashboard")}
-                  className="p-2 rounded-md text-gray-600 hover:bg-gray-100 mr-2"
+                  className="p-2 rounded-md cursor-pointer text-gray-600 hover:bg-gray-100 mr-2"
                 >
                   <ArrowLeft className="h-5 w-5" />
                 </button>
@@ -245,7 +245,7 @@ const TaskDetailScreen = () => {
                 <div className="relative" ref={userMenuRef}>
                   <button
                     onClick={() => setShowUserMenu((prev) => !prev)}
-                    className="group flex items-center gap-3 px-3 py-2 rounded-lg transition-all text-gray-700 hover:bg-gray-100"
+                    className="group cursor-pointer flex items-center gap-3 px-3 py-2 rounded-lg transition-all text-gray-700 hover:bg-gray-100"
                   >
                     <div className="p-[2px] rounded-full bg-gradient-to-r from-purple-500 to-blue-500">
                       <div className="bg-white rounded-full p-1">
@@ -281,20 +281,20 @@ const TaskDetailScreen = () => {
                         </div>
                       </div>
 
-                      <Link
+                      {/* <Link
                         to="/profile"
                         onClick={() => setShowUserMenu(false)}
                         className="block px-4 py-2 text-sm hover:bg-gray-100"
                       >
                         Profile
-                      </Link>
+                      </Link> */}
 
                       <button
                         onClick={() => {
                           setShowUserMenu(false);
                           handleLogout();
                         }}
-                        className="block w-full text-left px-4 py-2 text-sm flex items-center text-red-600 hover:bg-red-50 hover:text-red-700"
+                        className="block w-full cursor-pointer text-left px-4 py-2 text-sm flex items-center text-red-600 hover:bg-red-50 hover:text-red-700"
                       >
                         <LogOut className="inline h-4 w-4 mr-2" />
                         Logout

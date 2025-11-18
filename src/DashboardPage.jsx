@@ -246,7 +246,7 @@ const DashboardPage = () => {
                     handleCreate();
                     setShowMobileSidebar(false);
                   }}
-                  className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-4 py-2 rounded-md flex items-center justify-center space-x-2"
+                  className="w-full cursor-pointer bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-4 py-2 rounded-md flex items-center justify-center space-x-2"
                 >
                   <Plus className="h-4 w-4" />
                   <span>Create Task</span>
@@ -265,7 +265,7 @@ const DashboardPage = () => {
                       setSelectedFilter(filter);
                       setShowMobileSidebar(false);
                     }}
-                    className={`w-full text-left px-3 py-2 rounded-md text-sm ${
+                    className={`w-full cursor-pointer text-left px-3 py-2 rounded-md text-sm ${
                       selectedFilter === filter
                         ? "bg-gradient-to-br from-indigo-100 to-blue-100 text-black font-medium"
                         : "text-gray-700 hover:bg-gray-100"
@@ -307,7 +307,7 @@ const DashboardPage = () => {
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
-                  className="border rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 bg-white border-gray-300"
+                  className="border rounded-md cursor-pointer px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 bg-white border-gray-300"
                 >
                   <option value="title">Title</option>
                   <option value="status">Status</option>
@@ -320,7 +320,7 @@ const DashboardPage = () => {
                   onClick={() =>
                     setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"))
                   }
-                  className="px-3 py-2 border rounded-md text-sm bg-white border-gray-300 hover:bg-gray-50"
+                  className="px-3 py-2 border cursor-pointer rounded-md text-sm bg-white border-gray-300 hover:bg-gray-50"
                 >
                   {sortOrder === "asc" ? "↑ Asc" : "↓ Desc"}
                 </button>
@@ -405,7 +405,7 @@ const DashboardPage = () => {
                                 <div className="relative group">
                                   <button
                                     onClick={() => handleDetail(task.id)}
-                                    className="p-2 rounded-full bg-blue-50 border text-blue-600 hover:bg-blue-100 transition-colors"
+                                    className="p-2 rounded-full bg-blue-50 cursor-pointer border text-blue-600 hover:bg-blue-100 transition-colors"
                                   >
                                     <Eye className="h-4 w-4" />
                                   </button>
@@ -417,7 +417,7 @@ const DashboardPage = () => {
                                 <div className="relative group">
                                   <button
                                     onClick={() => handleEdit(task.id)}
-                                    className="p-2 rounded-full bg-yellow-50 border text-yellow-600 hover:bg-yellow-100 transition-colors"
+                                    className="p-2 rounded-full bg-yellow-50 cursor-pointer border text-yellow-600 hover:bg-yellow-100 transition-colors"
                                   >
                                     <Edit className="h-4 w-4" />
                                   </button>
@@ -429,7 +429,7 @@ const DashboardPage = () => {
                                 <div className="relative group">
                                   <button
                                     onClick={() => handleDelete(task.id)}
-                                    className="p-2 rounded-full bg-red-50 border text-red-600 hover:bg-red-100 transition-colors"
+                                    className="p-2 rounded-full bg-red-50 cursor-pointer border text-red-600 hover:bg-red-100 transition-colors"
                                   >
                                     <Trash2 className="h-4 w-4" />
                                   </button>
@@ -447,7 +447,7 @@ const DashboardPage = () => {
                 </div>
 
                 {/* Mobile Card View - Shows below 1280px */}
-                <div className="space-y-4 xl:hidden max-h-[65vh] overflow-y-auto pr-1.5 scrollbar-thin mt-6">
+                <div className="space-y-4 xl:hidden max-h-[65vh] overflow-y-auto overflow-x-hidden pr-1.5 scrollbar-none mt-6">
                   {currentTasks.map((task) => (
                     <div
                       key={task.id}
@@ -537,7 +537,7 @@ const DashboardPage = () => {
                       setCurrentPage((prev) => Math.max(prev - 1, 1))
                     }
                     disabled={currentPage === 1}
-                    className="w-10 h-10 flex items-center justify-center rounded-full text-sm bg-gray-800 text-white hover:bg-gray-700 disabled:opacity-50"
+                    className="w-10 h-10 flex items-center cursor-pointer justify-center rounded-full text-sm bg-gray-800 text-white hover:bg-gray-700 disabled:opacity-50"
                   >
                     <ChevronLeft className="h-4 w-4" />
                   </button>
@@ -562,7 +562,7 @@ const DashboardPage = () => {
                       setCurrentPage((prev) => Math.min(prev + 1, totalPages))
                     }
                     disabled={currentPage === totalPages}
-                    className="w-10 h-10 flex items-center justify-center rounded-full text-sm bg-gray-800 text-white hover:bg-gray-700 disabled:opacity-50"
+                    className="w-10 h-10 flex items-center justify-center cursor-pointer rounded-full text-sm bg-gray-800 text-white hover:bg-gray-700 disabled:opacity-50"
                   >
                     <ChevronRight className="h-4 w-4" />
                   </button>
