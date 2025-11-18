@@ -28,6 +28,7 @@ const DashboardPage = () => {
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [tasksPerPage] = useState(20);
+  const [totalPages, setTotalPages] = useState(1);
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);
   const [showSnackbar, setShowSnackbar] = useState(false);
   const [currentUser, setCurrentUser] = useState(() => {
@@ -41,7 +42,28 @@ const DashboardPage = () => {
     const fetchTasks = async () => {
       try {
         setLoading(true);
-        const res = await fetch(`${API_URL}/api/tasks`, {
+
+        const params = new URLSearchParams({
+          page: currentPage,
+          limit: tasksPerPage,
+          search: searchTerm || "",
+          sortBy,
+          sortOrder,
+        });
+
+        // status filter from selectedFilter
+        if (selectedFilter === "Assigned to Me") {
+          params.append("assignedToId", currentUser?.id);
+        } else if (selectedFilter === "Created by Me") {
+          params.append("createdById", currentUser?.id);
+        } else if (
+          selectedFilter !== "All" &&
+          selectedFilter.trim() !== ""
+        ) {
+          params.append("status", selectedFilter.toUpperCase());
+        }
+
+        const res = await fetch(`${API_URL}/api/tasks?${params.toString()}`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
@@ -50,24 +72,29 @@ const DashboardPage = () => {
           cache: "no-store",
         });
 
-        if (!res.ok) {
-          throw new Error("Failed to fetch tasks");
-        }
+        if (!res.ok) throw new Error("Failed to fetch tasks");
 
         const data = await res.json();
-        console.log("Data", data);
-        console.log("Current User:", currentUser);
 
-        setTasks(Array.isArray(data) ? data : data.data || []);
+        console.log("Fetched:", data);
+        setTasks(data.data || []);
+        setTotalPages(data.pagination?.pages || 1);
       } catch (err) {
         console.error("Error fetching tasks:", err);
       } finally {
         setLoading(false);
       }
     };
-
     fetchTasks();
-  }, [token, currentUser]);
+  }, [
+    token,
+    currentUser,
+    currentPage,
+    searchTerm,
+    sortBy,
+    sortOrder,
+    selectedFilter,
+  ]);
 
   const handleDelete = async (taskId) => {
     if (!window.confirm("Are you sure you want to delete this task?")) return;
@@ -95,51 +122,8 @@ const DashboardPage = () => {
   };
 
   useEffect(() => {
-    let filtered = [...tasks];
-
-    if (currentUser && selectedFilter !== "All") {
-      if (selectedFilter === "Assigned to Me") {
-        filtered = filtered.filter(
-          (task) => task.assignedToId === currentUser.id
-        );
-      } else if (selectedFilter === "Created by Me") {
-        filtered = filtered.filter(
-          (task) => task.createdById === currentUser.id
-        );
-      } else {
-        filtered = filtered.filter(
-          (task) => task.status === selectedFilter.toUpperCase()
-        );
-      }
-    }
-
-    if (searchTerm) {
-      filtered = filtered.filter((task) =>
-        task.title.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    }
-
-    filtered.sort((a, b) => {
-      let aValue = a[sortBy];
-      let bValue = b[sortBy];
-
-      if (sortBy === "dueDate") {
-        aValue = aValue ? new Date(aValue) : null;
-        bValue = bValue ? new Date(bValue) : null;
-      }
-
-      if (aValue == null) return 1;
-      if (bValue == null) return -1;
-
-      if (sortOrder === "asc") {
-        return aValue < bValue ? -1 : aValue > bValue ? 1 : 0;
-      } else {
-        return aValue > bValue ? -1 : aValue < bValue ? 1 : 0;
-      }
-    });
-
-    setFilteredTasks(filtered);
-  }, [tasks, selectedFilter, searchTerm, sortBy, sortOrder, currentUser]);
+    setFilteredTasks(tasks);
+  }, [tasks]);
 
   const getPriorityColor = (priority) => {
     switch (priority) {
@@ -183,10 +167,7 @@ const DashboardPage = () => {
   const handleCreate = () => navigate("/tasks/create");
   const handleEdit = (taskId) => navigate(`/tasks/${taskId}/edit`);
 
-  const indexOfLastTask = currentPage * tasksPerPage;
-  const indexOfFirstTask = indexOfLastTask - tasksPerPage;
-  const currentTasks = filteredTasks.slice(indexOfFirstTask, indexOfLastTask);
-  const totalPages = Math.ceil(filteredTasks.length / tasksPerPage);
+  const currentTasks = filteredTasks;
 
   const filters = ["All", "Assigned to Me", "Created by Me", "Completed"];
 
@@ -537,20 +518,20 @@ const DashboardPage = () => {
                       setCurrentPage((prev) => Math.max(prev - 1, 1))
                     }
                     disabled={currentPage === 1}
-                    className="w-10 h-10 flex items-center cursor-pointer justify-center rounded-full text-sm bg-gray-800 text-white hover:bg-gray-700 disabled:opacity-50"
+                    className="w-10 h-10 flex items-center cursor-pointer justify-center rounded-full text-sm hover:bg-gray-200  disabled:opacity-50"
                   >
-                    <ChevronLeft className="h-4 w-4" />
+                    <ChevronLeft className="h-4 w-4 text-black" />
                   </button>
 
                   {[...Array(totalPages)].map((_, i) => (
                     <button
                       key={i}
                       onClick={() => setCurrentPage(i + 1)}
-                      className={`w-10 h-10 flex items-center justify-center rounded-full text-sm font-medium transition-all
+                      className={`w-10 h-10 flex items-center cursor-pointer justify-center rounded-full text-sm font-medium transition-all
                   ${
                     currentPage === i + 1
                       ? "bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-md"
-                      : "bg-gray-600 text-gray-200 hover:bg-gray-700"
+                      : "hover:bg-gray-200"
                   }`}
                     >
                       {i + 1}
@@ -562,9 +543,9 @@ const DashboardPage = () => {
                       setCurrentPage((prev) => Math.min(prev + 1, totalPages))
                     }
                     disabled={currentPage === totalPages}
-                    className="w-10 h-10 flex items-center justify-center cursor-pointer rounded-full text-sm bg-gray-800 text-white hover:bg-gray-700 disabled:opacity-50"
+                    className="w-10 h-10 flex items-center cursor-pointer justify-center rounded-full text-sm hover:bg-gray-200 disabled:opacity-50"
                   >
-                    <ChevronRight className="h-4 w-4" />
+                    <ChevronRight className="h-4 w-4 text-black" />
                   </button>
                 </div>
               </>
