@@ -180,6 +180,31 @@ const DashboardPage = () => {
     </div>
   );
 
+  const getPageNumbers = () => {
+    const pages = [];
+
+    if (totalPages <= 5) {
+      for (let i = 1; i <= totalPages; i++) pages.push(i);
+    } else {
+      if (currentPage <= 3) {
+        pages.push(1, 2, 3, "...", totalPages);
+      } else if (currentPage >= totalPages - 2) {
+        pages.push(1, "...", totalPages - 2, totalPages - 1, totalPages);
+      } else {
+        pages.push(
+          1,
+          "...",
+          currentPage - 1,
+          currentPage,
+          currentPage + 1,
+          "...",
+          totalPages
+        );
+      }
+    }
+    return pages;
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 text-gray-900">
       <div className="flex flex-col h-screen">
@@ -512,39 +537,39 @@ const DashboardPage = () => {
                 </div>
 
                 {/* Pagination */}
-                <div className="flex justify-center items-center mt-8 space-x-2">
+                <div className="flex justify-center items-center mt-8 space-x-1 sm:space-x-2">
                   <button
-                    onClick={() =>
-                      setCurrentPage((prev) => Math.max(prev - 1, 1))
-                    }
+                    onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
                     disabled={currentPage === 1}
-                    className="w-10 h-10 flex items-center cursor-pointer justify-center rounded-full text-sm hover:bg-gray-200  disabled:opacity-50"
-                  >
+                    className="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded text-xs sm:text-sm hover:bg-gray-200 disabled:opacity-50 cursor-pointer" >
                     <ChevronLeft className="h-4 w-4 text-black" />
                   </button>
 
-                  {[...Array(totalPages)].map((_, i) => (
+                  {/* Page Numbers */}
+                  {getPageNumbers().map((item, index) => (
                     <button
-                      key={i}
-                      onClick={() => setCurrentPage(i + 1)}
-                      className={`w-10 h-10 flex items-center cursor-pointer justify-center rounded-full text-sm font-medium transition-all
-                  ${
-                    currentPage === i + 1
-                      ? "bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-md"
-                      : "hover:bg-gray-200"
-                  }`}
+                      key={index}
+                      onClick={() => item !== "..." && setCurrentPage(item)}
+                      disabled={item === "..."}
+                      className={`flex items-center justify-center rounded transition-all w-8 h-8 sm:w-10 sm:h-10 text-xs sm:text-sm font-medium
+                        ${
+                          item === currentPage
+                            ? "border-2 border-blue-500 bg-grey-200 text-black shadow-md"
+                            : item === "..."
+                            ? "cursor-default text-gray-500"
+                            : "hover:bg-gray-200 cursor-pointer"
+                        }
+                      `}
                     >
-                      {i + 1}
+                      {item}
                     </button>
                   ))}
 
+                  {/* Next Button */}
                   <button
-                    onClick={() =>
-                      setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-                    }
+                    onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
                     disabled={currentPage === totalPages}
-                    className="w-10 h-10 flex items-center cursor-pointer justify-center rounded-full text-sm hover:bg-gray-200 disabled:opacity-50"
-                  >
+                    className="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded text-xs sm:text-sm hover:bg-gray-200 disabled:opacity-50 cursor-pointer">
                     <ChevronRight className="h-4 w-4 text-black" />
                   </button>
                 </div>
