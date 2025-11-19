@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import AttachmentsSection from "./components/AttachmentsSection";
 import CommentsSection from "./components/CommentsSection";
+import Loader from "./components/Loader";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -153,7 +154,9 @@ const TaskDetailScreen = () => {
       } catch (err) {
         console.error(err);
       } finally {
-        setLoading(false);
+        setTimeout(() => {
+          setLoading(false);
+        }, 800);
       }
     };
 
@@ -201,11 +204,8 @@ const TaskDetailScreen = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading task details...</p>
-        </div>
+      <div className="min-h-screen w-full bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
+        <Loader />
       </div>
     );
   }
