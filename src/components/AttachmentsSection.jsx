@@ -145,24 +145,31 @@ const AttachmentsSection = ({
           <p className="text-sm font-medium text-blue-700 mb-2">
             Files to Upload ({pendingFiles.length})
           </p>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
+
+          {/* Responsive Grid */}
+          <div className="grid gap-3 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
             {pendingFiles.map((file) => (
               <div
                 key={file.name}
                 className="flex items-center justify-between p-2 bg-white border border-gray-200 rounded-md"
               >
-                <div className="flex items-center gap-2">
+                {/* Left content */}
+                <div className="flex items-center gap-2 min-w-0">
                   <div className="w-7 h-7 bg-gray-100 rounded-md flex items-center justify-center">
                     {getFileIcon(file.name)}
                   </div>
-                  <span className="text-sm text-gray-700 truncate max-w-[150px]">
+
+                  {/* File name responsive */}
+                  <span className="text-sm text-gray-700 truncate max-w-full sm:max-w-[150px]">
                     {file.name}
                   </span>
                 </div>
-                <div className="relative group">
+
+                {/* Remove button with tooltip */}
+                <div className="relative group flex-shrink-0">
                   <button
                     onClick={() => handleRemovePending(file.name)}
-                    className="p-1 hover:bg-gray-100 rounded-md cursor-pointer flex-shrink-0"
+                    className="p-1 hover:bg-gray-100 rounded-md cursor-pointer"
                   >
                     <X className="w-3.5 h-3.5 text-red-500" />
                   </button>
