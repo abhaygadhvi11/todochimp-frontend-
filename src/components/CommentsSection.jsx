@@ -100,7 +100,7 @@ const CommentsSection = ({ comments = [], onAddComment }) => {
 
       {/* Snackbar */}
       {showUploadSnackbar && (
-        <div className="fixed bottom-6 left-6 flex items-center gap-2 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg shadow-md transition-all animate-fade-in-up">
+        <div className="fixed bottom-6 left-6 z-50 flex items-center gap-2 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg shadow-md transition-all animate-fade-in-up">
           <Check className="w-5 h-5 text-green-600" />
           <p className="text-sm">Comment added successfully</p>
         </div>
