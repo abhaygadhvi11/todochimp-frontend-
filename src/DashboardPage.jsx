@@ -27,6 +27,9 @@ const DashboardPage = () => {
   const [sortBy, setSortBy] = useState("title");
   const [sortOrder, setSortOrder] = useState("asc");
   const [loading, setLoading] = useState(true);
+  const [response, setResponse] = useState(null);
+  const [openDialog, setOpenDialog] = useState(false);
+  const [geminiData, setGeminiData] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [tasksPerPage] = useState(20);
   const [totalPages, setTotalPages] = useState(1);
@@ -57,10 +60,7 @@ const DashboardPage = () => {
           params.append("assignedToId", currentUser?.id);
         } else if (selectedFilter === "Created by Me") {
           params.append("createdById", currentUser?.id);
-        } else if (
-          selectedFilter !== "All" &&
-          selectedFilter.trim() !== ""
-        ) {
+        } else if (selectedFilter !== "All" && selectedFilter.trim() !== "") {
           params.append("status", selectedFilter.toUpperCase());
         }
 
@@ -153,6 +153,35 @@ const DashboardPage = () => {
         return "text-orange-600 bg-orange-100";
       default:
         return "text-gray-600 bg-gray-100";
+    }
+  };
+
+  const handleClick = async () => {
+    setLoading(true);
+    setResponse(null);
+
+    try {
+      const res = await fetch("http://localhost:3001/api/calls/execute", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-gemini-key": "AIzaSyAkqc4sqRMZ6B_tPGWP-d34Pbttf052BwA",
+        },
+        body: JSON.stringify({
+          endpoint: "/tasks/123",
+          action: "fetch_info",
+        }),
+      });
+
+      const data = await res.json();
+      setGeminiData(data); // 👈 Save response
+      setOpenDialog(true); // 👈 Open dialog
+    } catch (error) {
+      console.error("Error calling API:", error);
+      setGeminiData({ error: error.message });
+      setOpenDialog(true); // Still open dialog to show error
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -333,6 +362,90 @@ const DashboardPage = () => {
                 >
                   {sortOrder === "asc" ? "↑ Asc" : "↓ Desc"}
                 </button>
+
+                <div>
+                  <button
+                    onClick={handleClick}
+                    class="relative px-6 py-2 font-semibold text-white rounded-full transition-all duration-300 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-purple-600 hover:to-pink-600shadow-[0_0_15px_rgba(99,102,241,0.7)]hover:shadow-[0_0_25px_rgba(168,85,247,0.9)]cursor-pointer flex items-center justify-center space-x-2disabled:opacity-50 cursor-pointer disabled:cursor-not-allowedoverflow-hidden"
+                    disabled={loading}
+                  >
+                    <span class="relative z-10 flex items-center space-x-2">
+                      <svg
+                        class="w-5 h-5 animate-pulse"
+                        fill="white"
+                        stroke="currentColor"
+                        stroke-width="1.8"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456ZM16.894 20.567 16.5 21.75l-.394-1.183a2.25 2.25 0 0 0-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 0 0 1.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 0 0 1.423 1.423l1.183.394-1.183.394a2.25 2.25 0 0 0-1.423 1.423Z"
+                        />
+                      </svg>
+
+                      <span>{loading ? "Thinking..." : "Ask Gemini"}</span>
+                    </span>
+
+                    <span
+                      class="absolute inset-0 rounded-full bg-gradient-to-r from-blue-500/30 via-purple-500/30 to-pink-500/30blur-xl opacity-50 animate-pulse"
+                    ></span>
+                  </button>
+                </div>
+
+                {openDialog && (
+                  <div className="fixed inset-0 z-50 flex items-center justify-center">
+                    {/* Dim + Blur Background */}
+                    <div className="absolute inset-0 bg-black/40 backdrop-blur-sm"></div>
+
+                    {/* Dialog Box */}
+                    <div
+                      className="relative w-[800px] max-h-[85vh] overflow-y-auto bg-white rounded-2xl shadow-[0_0_25px_rgba(99,102,241,0.25)] border border-purple-300/40 animate-fadeIn p-8 backdrop-blur-xl"
+                    >
+                      {/* Title */}
+                      <h2 className="text-2xl font-bold mb-5 text-center bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                        Gemini Response
+                      </h2>
+
+                      {/* Error */}
+                      {geminiData?.error ? (
+                        <p className="text-red-600 font-medium text-center">
+                          {geminiData.error}
+                        </p>
+                      ) : (
+                        <>
+                          {/* Prompt */}
+                          <div className="mb-4">
+                            <p className="text-sm text-gray-700">
+                              <span className="font-semibold text-gray-900">
+                                Prompt:
+                              </span>{" "}
+                              {geminiData.predefined_prompt}
+                            </p>
+                          </div>
+
+                          {/* AI Response Box */}
+                          <p className="text-sm font-semibold text-gray-900">
+                            AI Response:
+                          </p>
+                          <div
+                            className="mt-2 p-4 bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl text-sm text-gray-800 leading-relaxed border border-purple-300/30 shadow-inner whitespace-pre-line max-h-60 overflow-y-auto"
+                          >
+                            {geminiData.ai_response}
+                          </div>
+                        </>
+                      )}
+
+                      {/* Close Button */}
+                      <button
+                        onClick={() => setOpenDialog(false)}
+                        className="mt-6 w-full py-3 rounded-xl text-white font-medium bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-lg hover:shadow-[0_0_20px_rgba(99,102,241,0.45)] cursor-pointer transition-all duration-300"
+                      >
+                        Close
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -407,7 +520,7 @@ const DashboardPage = () => {
                               </span>
                             </td>
                             <td className="px-6 py-3 text-center text-sm">
-                              {task.dueDate 
+                              {task.dueDate
                                 ? new Date(task.dueDate).toLocaleDateString()
                                 : "DD/MM/YYYY"}
                             </td>
@@ -544,9 +657,12 @@ const DashboardPage = () => {
                 {/* Pagination */}
                 <div className="flex justify-center items-center mt-8 space-x-1 sm:space-x-2">
                   <button
-                    onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                    onClick={() =>
+                      setCurrentPage((prev) => Math.max(prev - 1, 1))
+                    }
                     disabled={currentPage === 1}
-                    className="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded text-xs sm:text-sm hover:bg-gray-200 disabled:opacity-50 cursor-pointer" >
+                    className="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded text-xs sm:text-sm hover:bg-gray-200 disabled:opacity-50 cursor-pointer"
+                  >
                     <ChevronLeft className="h-4 w-4 text-black" />
                   </button>
 
@@ -572,9 +688,12 @@ const DashboardPage = () => {
 
                   {/* Next Button */}
                   <button
-                    onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                    onClick={() =>
+                      setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                    }
                     disabled={currentPage === totalPages}
-                    className="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded text-xs sm:text-sm hover:bg-gray-200 disabled:opacity-50 cursor-pointer">
+                    className="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded text-xs sm:text-sm hover:bg-gray-200 disabled:opacity-50 cursor-pointer"
+                  >
                     <ChevronRight className="h-4 w-4 text-black" />
                   </button>
                 </div>
