@@ -18,8 +18,10 @@ import {
 } from "lucide-react";
 import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
+import AIButton from "./components/AIButton.jsx";
 
 const API_URL = import.meta.env.VITE_API_URL;
+const apiKey = import.meta.env.VITE_API_KEY;
 
 const TaskFormPage = ({ mode }) => {
   const titleRef = useRef(null);
@@ -42,11 +44,12 @@ const TaskFormPage = ({ mode }) => {
   const [isEdit, setIsEdit] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [isDirty, setIsDirty] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [isLoading, setSaveLoading] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
   const [originalTask, setOriginalTask] = useState(null);
   const [showRaciSnackbar, setShowRaciSnackbar] = useState(false);
-  const token = localStorage.getItem("token"); // Replace with actual token from localStorage
+  const token = localStorage.getItem("token");
   const isAssigneeOnly =
     originalTask &&
     currentUser &&
@@ -162,6 +165,45 @@ const TaskFormPage = ({ mode }) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
     setIsDirty(true);
     if (errors[field]) setErrors((prev) => ({ ...prev, [field]: "" }));
+  };
+
+  const handleClick = async () => {
+    setLoading(true);
+
+    try {
+      const res = await fetch("http://localhost:3001/api/calls/execute", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-api-key": apiKey,
+        },
+        body: JSON.stringify({
+          endpoint: "/tasks/description/generate",
+          action: "generate task description based on the title",
+          title: formData.title,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (data.generated_description) {
+        setFormData((prev) => ({
+          ...prev,
+          description: data.generated_description,
+        }));
+      }
+
+    } catch (error) {
+      console.error("Error calling API:", error);
+
+      setFormData((prev) => ({
+        ...prev,
+        description: "Error generating description",
+      }));
+
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleRaciChange = async (index, field, value) => {
@@ -619,9 +661,12 @@ const TaskFormPage = ({ mode }) => {
 
                 {/* Description Field */}
                 <div className="space-y-3">
-                  <label className="block text-sm font-medium text-gray-900 mb-1.5">
-                    Description
-                  </label>
+                  <div className="flex items-center justify-between mb-1.5">
+                    <label className="block text-sm font-medium text-gray-900 mb-1.5">
+                      Description
+                    </label>
+                    <AIButton loading={loading} onClick={handleClick} disabled={isAssigneeOnly}/>
+                  </div>
                   <textarea
                     value={formData.description}
                     onChange={(e) =>
