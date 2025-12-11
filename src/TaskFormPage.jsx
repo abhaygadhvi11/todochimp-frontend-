@@ -22,6 +22,7 @@ import AIButton from "./components/AIButton.jsx";
 
 const API_URL = import.meta.env.VITE_API_URL;
 const apiKey = import.meta.env.VITE_API_KEY;
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const TaskFormPage = ({ mode }) => {
   const titleRef = useRef(null);
@@ -171,7 +172,7 @@ const TaskFormPage = ({ mode }) => {
     setLoading(true);
 
     try {
-      const res = await fetch("http://localhost:3001/api/calls/execute", {
+      const res = await fetch(`${API_BASE_URL}/api/calls/execute`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
