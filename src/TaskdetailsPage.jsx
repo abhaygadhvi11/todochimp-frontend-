@@ -23,6 +23,7 @@ const TaskDetailScreen = () => {
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [comments, setComments] = useState([]);
   const [attachments, setAttachments] = useState([]);
+  const [expanded, setExpanded] = useState(false);
   const [currentUser, setCurrentUser] = useState(() => {
     const storedUser = localStorage.getItem("user");
     return storedUser ? JSON.parse(storedUser) : null;
@@ -310,33 +311,52 @@ const TaskDetailScreen = () => {
         {/* Main Content */}
         <main className="flex-1 overflow-auto p-4 sm:p-6">
           <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-5 mb-6">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
-              <div>
+            <div className="mb-4">
+              <div className="flex flex-wrap items-center justify-between gap-3">
                 <h1 className="text-xl sm:text-2xl font-semibold text-gray-900">
                   {task.title}
                 </h1>
-                <p className="text-gray-600 mt-1">{task.description}</p>
+                <div className="flex flex-wrap items-center gap-2">
+                  <span
+                    className={`px-2.5 py-1 text-xs font-medium rounded-md border ${getStatusColor(
+                      task.status
+                    )}`}
+                  >
+                    {task.status}
+                  </span>
+                  <span
+                    className={`px-2.5 py-1 text-xs font-medium rounded-md border ${getPriorityColor(
+                      task.priority
+                    )}`}
+                  >
+                    {task.priority}
+                  </span>
+                </div>
               </div>
-              <div className="flex flex-wrap items-center gap-2">
-                <span
-                  className={`px-2.5 py-1 text-xs font-medium rounded-md border ${getStatusColor(
-                    task.status
-                  )}`}
-                >
-                  {task.status}
-                </span>
-                <span
-                  className={`px-2.5 py-1 text-xs font-medium rounded-md border ${getPriorityColor(
-                    task.priority
-                  )}`}
-                >
-                  {task.priority}
-                </span>
-              </div>
+
+              {/* Task Description with Show More / Show Less */}
+              {task.description && (
+                <p className="text-gray-700 mt-2">
+                  {expanded
+                    ? task.description
+                    : task.description.length > 120
+                    ? task.description.slice(0, 120) + "..."
+                    : task.description}
+
+                  {task.description.length > 120 && (
+                    <button
+                      onClick={() => setExpanded((prev) => !prev)}
+                      className="ml-2 text-blue-600 hover:underline text-sm font-medium cursor-pointer"
+                    >
+                      {expanded ? "Show Less" : "Read More"}
+                    </button>
+                  )}
+                </p>
+              )}
             </div>
 
             {/* Info Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 border-t border-gray-100 pt-4">
+            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 border-t border-gray-100 pt-4">
               <div className="flex items-center gap-3">
                 <Calendar className="w-5 h-5 text-gray-400" />
                 <div>
