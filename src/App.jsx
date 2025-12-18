@@ -11,6 +11,7 @@ import ResetPasswordPage from "./ResetPasswordPage";
 import DashboardPage from "./DashboardPage";
 import TaskDetailScreen from "./TaskdetailsPage";
 import TaskFormPage from "./TaskFormPage";
+import GeneratePage from "./GeneratePage";
 
 export default function App() {
   return (
@@ -33,6 +34,8 @@ export default function App() {
         <Route path="/tasks/create" element={<TaskFormPage mode="create" />} />
         
         <Route path="/tasks/:taskId/edit" element={<TaskFormPage mode="edit" />} />
+
+        <Route path="/generate" element={<GeneratePage />} />
       </Routes>
     </Router>
   );

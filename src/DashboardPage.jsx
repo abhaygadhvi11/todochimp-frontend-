@@ -96,6 +96,10 @@ const DashboardPage = () => {
     selectedFilter,
   ]);
 
+  const handleNavigate = () => {
+    navigate("/generate");
+  }
+
   const handleDelete = async (taskId) => {
     if (!window.confirm("Are you sure you want to delete this task?")) return;
 
@@ -329,6 +333,12 @@ const DashboardPage = () => {
                   className="px-3 py-2 border cursor-pointer rounded-md text-sm bg-white border-gray-300 hover:bg-gray-50"
                 >
                   {sortOrder === "asc" ? "↑ Asc" : "↓ Desc"}
+                </button>
+                <button
+                  onClick={handleNavigate}
+                  className="flex items-center space-x-1 cursor-pointer bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-md text-sm"
+                >
+                  <span>Generate</span>
                 </button>
               </div>
             </div>
