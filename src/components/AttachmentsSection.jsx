@@ -1,6 +1,5 @@
 import { useRef, useState } from "react";
 import {
-  Paperclip,
   FileText,
   FileImage,
   File,
@@ -9,7 +8,10 @@ import {
   Check,
   X,
   Trash2,
+  Eye,
 } from "lucide-react";
+import AttachmentsTable from "./table/AttachmentsTable";
+import AttachmentsCard from "./cards/AttachmentsCard";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -51,6 +53,19 @@ const AttachmentsSection = ({
   const [showUploadSnackbar, setShowUploadSnackbar] = useState(false);
   const [showDeleteSnackbar, setShowDeleteSnackbar] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [previewFile, setPreviewFile] = useState(null);
+  const getFileExtension = (fileName = "") => fileName.split(".").pop().toLowerCase();
+  const isImage = (ext) => ["jpg", "jpeg", "png"].includes(ext);
+  const isPDF = (ext) => ext === "pdf";
+  const isText = (ext) => ext === "txt";
+
+  const decodeBase64Text = (base64) => {
+    try {
+      return atob(base64.split(",")[1]);
+    } catch {
+      return "Unable to preview file";
+    }
+  };
 
   const handleFileChange = (e) => {
     const files = Array.from(e.target.files);
@@ -203,145 +218,92 @@ const AttachmentsSection = ({
       ) : (
         <>
           {/* Mobile View */}
-          <div className="lg:hidden max-h-64 overflow-y-auto pr-1">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {attachments.map((attachment) => (
-                <div
-                  key={attachment.id}
-                  className="flex items-center justify-between p-3 bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition-all"
-                >
-                  <div className="flex items-center gap-2 min-w-0">
-                    <div className="w-9 h-9 bg-gray-100 rounded-md flex items-center justify-center">
-                      {getFileIcon(attachment.fileName)}
-                    </div>
-                    <div className="min-w-0">
-                      <p
-                        className="font-medium text-sm text-gray-900 truncate"
-                        title={attachment.fileName}
-                      >
-                        {attachment.fileName}
-                      </p>
-                      <p className="text-xs text-gray-500">
-                        {new Date(attachment.uploadedAt).toLocaleDateString()}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-2 flex-shrink-0">
-                    <button
-                      onClick={() =>
-                        downloadBase64File(
-                          attachment.base64,
-                          attachment.fileName
-                        )
-                      }
-                      className="p-1.5 hover:bg-gray-100 rounded-md transition"
-                    >
-                      <Download className="w-4 h-4 text-gray-500" />
-                    </button>
-                    <button
-                      onClick={() => handleDelete(attachment.id)}
-                      className="p-1.5 hover:bg-red-50 rounded-md transition"
-                    >
-                      <Trash2 className="w-4 h-4 text-red-500" />
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
+          <AttachmentsCard
+            attachments={attachments}
+            setPreviewFile={setPreviewFile}
+            downloadBase64File={downloadBase64File}
+            handleDelete={handleDelete}
+            getFileIcon={getFileIcon}
+          />
 
           {/* Desktop Table View */}
-          <div className="hidden lg:flex flex-col mt-4 bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden">
-            <div className="max-h-70 overflow-y-auto">
-              <table className="min-w-full border-collapse">
-                {/* Sticky Header */}
-                <thead className="bg-gradient-to-r from-blue-700 to-purple-600 text-white sticky top-0 z-10">
-                  <tr>
-                    <th className="py-4 px-6 text-center text-m font-semibold w-16">
-                      #
-                    </th>
-                    <th className="py-4 px-6 text-left text-m font-semibold">
-                      FILE NAME
-                    </th>
-                    <th className="py-4 px-6 text-center text-m font-semibold">
-                      UPLOADED DATE
-                    </th>
-                    <th className="py-4 px-6 text-center text-m font-semibold">
-                      ACTIONS
-                    </th>
-                  </tr>
-                </thead>
+          <AttachmentsTable
+            attachments={attachments}
+            setPreviewFile={setPreviewFile}
+            downloadBase64File={downloadBase64File}
+            handleDelete={handleDelete}
+          />
+        </>
+      )}
 
-                {/* Scrollable Body */}
-                <tbody className="divide-y divide-gray-100">
-                  {attachments.map((attachment, index) => (
-                    <tr
-                      key={attachment.id}
-                      className={`transition-all duration-200 ${
-                        index % 2 === 0 ? "bg-gray-50" : "bg-white"
-                      } hover:bg-indigo-50`}
+      {previewFile && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-2 sm:px-4">
+          <div
+            className=" relative bg-white rounded-xl shadow-2xl w-full max-w-[95vw] sm:max-w-3xl lg:max-w-4xl max-h-[95vh] flex flex-col animate-fadeIn"
+          >
+            {/* Header */}
+            <div className="sticky top-0 z-10 flex items-center justify-between gap-3 px-4 py-3 bg-white rounded-full">
+              <h3
+                className="text-sm sm:text-base font-semibold text-gray-800 truncate"
+                title={previewFile.fileName}
+              >
+                {previewFile.fileName}
+              </h3>
+
+              <button
+                onClick={() => setPreviewFile(null)}
+                className="p-2 rounded-md hover:bg-gray-100 transition focus:outline-none focus:ring-2 focus:ring-gray-300 cursor-pointer"
+              >
+                <X className="w-5 h-5 text-gray-600" />
+              </button>
+            </div>
+
+            {/* Body */}
+            <div className="flex-1 overflow-auto p-3 sm:p-4 bg-gray-50">
+              {(() => {
+                const ext = getFileExtension(previewFile.fileName);
+
+                if (isImage(ext)) {
+                  return (
+                    <div className="flex justify-center">
+                      <img
+                        src={previewFile.base64}
+                        alt="Preview"
+                        className=" max-w-full max-h-[70vh] object-contain rounded-lg shadow"
+                      />
+                    </div>
+                  );
+                }
+
+                if (isPDF(ext)) {
+                  return (
+                    <iframe
+                      src={previewFile.base64}
+                      title="PDF Preview"
+                      className=" w-full h-[65vh] sm:h-[70vh] rounded-lg border bg-white"
+                    />
+                  );
+                }
+
+                if (isText(ext)) {
+                  return (
+                    <pre
+                      className=" text-sm leading-relaxed whitespace-pre-wrap bg-white p-4 rounded-lg border text-gray-800 max-h-[70vh] overflow-auto"
                     >
-                      {/* Sr No */}
-                      <td className="px-6 py-3 text-center text-sm font-medium text-gray-700">
-                        {index + 1}
-                      </td>
+                      {decodeBase64Text(previewFile.base64)}
+                    </pre>
+                  );
+                }
 
-                      {/* File Name */}
-                      <td
-                        className="px-6 py-3 text-left text-sm font-medium text-gray-900 truncate max-w-[280px]"
-                        title={attachment.fileName}
-                      >
-                        {attachment.fileName}
-                      </td>
-
-                      {/* Uploaded Date */}
-                      <td className="px-6 py-3 text-center text-sm text-gray-700 whitespace-nowrap">
-                        {new Date(attachment.uploadedAt).toLocaleDateString()}
-                      </td>
-
-                      {/* Actions */}
-                      <td className="px-6 py-3 text-center">
-                        <div className="inline-flex justify-center space-x-2">
-                          {/* Download */}
-                          <div className="relative group">
-                            <button
-                              onClick={() =>
-                                downloadBase64File(
-                                  attachment.base64,
-                                  attachment.fileName
-                                )
-                              }
-                              className="p-2 rounded-full cursor-pointer bg-blue-50 border text-blue-600 hover:bg-blue-100 transition-colors"
-                            >
-                              <Download className="h-4 w-4" />
-                            </button>
-                            <span className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 text-xs text-white bg-gray-900 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none z-20">
-                              Download File
-                            </span>
-                          </div>
-
-                          {/* Delete */}
-                          <div className="relative group">
-                            <button
-                              onClick={() => handleDelete(attachment.id)}
-                              className="p-2 rounded-full cursor-pointer bg-red-50 border text-red-600 hover:bg-red-100 transition-colors"
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </button>
-                            <span className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 text-xs text-white bg-gray-900 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none z-20">
-                              Delete File
-                            </span>
-                          </div>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+                return (
+                  <p className="text-center text-gray-500 text-sm py-10">
+                    Preview not supported for this file type.
+                  </p>
+                );
+              })()}
             </div>
           </div>
-        </>
+        </div>
       )}
 
       {/* Upload Snackbar */}

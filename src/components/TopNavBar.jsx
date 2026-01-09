@@ -1,15 +1,18 @@
 import { useState, useEffect, useRef } from "react";
-import { User, ChevronDown, LogOut, Menu, Mail } from "lucide-react";
-import { Link } from "react-router-dom";
+import { User, ChevronDown, LogOut, Menu, Mail, ArrowLeft } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
 
 const TopNavBar = ({
   handleLogout,
   showMobileSidebar,
   setShowMobileSidebar,
   user,
+  showBack = false,     
+  backTo = "/dashboard" 
 }) => {
   const [showUserMenu, setShowUserMenu] = useState(false);
   const userMenuRef = useRef(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -26,28 +29,39 @@ const TopNavBar = ({
     <nav className="bg-white border-b border-gray-200 shadow-sm z-50 relative">
       <div className="px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          {/* Left side */}
-          <div className="flex items-center">
-            <button
-              onClick={() => setShowMobileSidebar(!showMobileSidebar)}
-              className="md:hidden p-2 rounded-md text-gray-600 hover:bg-gray-100"
-            >
-              <Menu className="h-5 w-5 text-black" />
-            </button>
-
-            <div className="flex items-center">
-              <Link
-                to="/dashboard"
-                className="flex items-center group cursor-pointer"
+          
+          {/* LEFT SIDE */}
+          <div className="flex items-center gap-2">
+            
+            {/* Mobile menu */}
+            {!showBack && (
+              <button
+                onClick={() => setShowMobileSidebar(!showMobileSidebar)}
+                className="md:hidden p-2 rounded-md text-gray-600 hover:bg-gray-100"
               >
-                <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center group-hover:opacity-90 transition">
-                  <span className="text-white font-bold text-sm">TC</span>
-                </div>
-                <span className="ml-2 text-xl font-semibold hidden md:inline text-gray-800 group-hover:text-gray-900">
-                  TODOCHIMP
-                </span>
-              </Link>
-            </div>
+                <Menu className="h-5 w-5 text-black" />
+              </button>
+            )}
+
+            {/* Back button */}
+            {showBack && (
+              <button
+                onClick={() => navigate(backTo)}
+                className="p-2 cursor-pointer rounded-md text-gray-600 hover:bg-gray-100"
+              >
+                <ArrowLeft className="h-5 w-5" />
+              </button>
+            )}
+
+            {/* Logo */}
+            <Link to="/dashboard" className="flex items-center group">
+              <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
+                <span className="text-white font-bold text-sm">TC</span>
+              </div>
+              <span className="ml-2 text-xl font-semibold hidden md:inline text-gray-800">
+                TODOCHIMP
+              </span>
+            </Link>
           </div>
 
           {/* Right side */}
@@ -85,7 +99,6 @@ const TopNavBar = ({
                 <ChevronDown className="h-4 w-4 ml-auto text-gray-500" />
               </button>
 
-              {/* Dropdown */}
               {showUserMenu && (
                 <div className="absolute right-0 mt-2 w-56 rounded-md shadow-lg py-2 z-50 border bg-white border-gray-200 text-gray-700">
                   <div className="px-4 py-3 border-b border-gray-100">
