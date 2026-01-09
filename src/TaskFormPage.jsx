@@ -15,6 +15,7 @@ import {
   Users,
   RotateCcw,
   ArrowLeft,
+  AlertTriangle
 } from "lucide-react";
 import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
@@ -50,6 +51,7 @@ const TaskFormPage = ({ mode }) => {
   const [currentUser, setCurrentUser] = useState(null);
   const [originalTask, setOriginalTask] = useState(null);
   const [showRaciSnackbar, setShowRaciSnackbar] = useState(false);
+  const [showApiLimitSnackbar, setShowApiLimitSnackbar] = useState(false);
   const token = localStorage.getItem("token");
   const isAssigneeOnly =
     originalTask &&
@@ -186,6 +188,11 @@ const TaskFormPage = ({ mode }) => {
       });
 
       const data = await res.json();
+
+      if (res.status === 429) {
+        setShowApiLimitSnackbar(true);
+        setTimeout(() => setShowApiLimitSnackbar(false), 3000)
+      }
 
       if (data.generated_description) {
         setFormData((prev) => ({
@@ -401,7 +408,7 @@ const TaskFormPage = ({ mode }) => {
             dueDate: formData.dueDate
               ? new Date(formData.dueDate).toISOString()
               : undefined,
-            priority: formData.priority,
+            priority: formData.priority || "MEDIUM",
             status: formData.status || "PENDING",
             assignedToId: formData.assignee || undefined,
             organizationId: currentUser.organizationId,
@@ -413,7 +420,7 @@ const TaskFormPage = ({ mode }) => {
           title: formData.title,
           description: formData.description || undefined,
           dueDate: formData.dueDate || undefined,
-          priority: formData.priority,
+          priority: formData.priority || "MEDIUM",
           status: formData.status || "PENDING",
           assignedToId: formData.assignee || undefined,
           organizationId: currentUser.organizationId,
@@ -500,6 +507,7 @@ const TaskFormPage = ({ mode }) => {
       if (!confirmed) return;
     }
     resetForm();
+    navigate("/dashboard");
   };
 
   const resetForm = () => {
@@ -507,7 +515,7 @@ const TaskFormPage = ({ mode }) => {
       title: "",
       description: "",
       dueDate: "",
-      priority: "",
+      priority: "MEDIUM",
       assignee: "",
       organization: currentUser?.organization?.name || "Unknown Organization",
       status: "PENDING",
@@ -715,6 +723,15 @@ const TaskFormPage = ({ mode }) => {
                     </div>
                   )}
                 </div>
+
+                {showApiLimitSnackbar && (
+                  <div className="fixed bottom-6 left-6 z-50 flex items-center gap-2 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg shadow-lg animate-fade-in-up transition-all">
+                    <AlertTriangle className="w-5 h-5 text-red-600" />
+                    <p className="text-sm font-medium">
+                      API-Key limit exceeded. Upgrade your plan.
+                    </p>
+                  </div>
+                )}
 
                 {/* Priority and Due Date Row */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
