@@ -32,10 +32,9 @@ const DashboardPage = () => {
     const storedUser = localStorage.getItem("user");
     return storedUser ? JSON.parse(storedUser) : null;
   });
-  console.log("loading", loading);
-  console.log(currentUser);
   const token = localStorage.getItem("token");
   const navigate = useNavigate();
+  
   useEffect(() => {
     const fetchTasks = async () => {
       try {
@@ -71,6 +70,7 @@ const DashboardPage = () => {
 
         const data = await res.json();
 
+        console.log(currentUser);
         console.log("Fetched:", data);
         setTasks(data.data || []);
         setTotalPages(data.pagination?.pages || 1);

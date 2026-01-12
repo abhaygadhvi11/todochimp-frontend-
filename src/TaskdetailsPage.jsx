@@ -8,6 +8,7 @@ import AttachmentsSection from "./components/AttachmentsSection";
 import CommentsSection from "./components/CommentsSection";
 import Loader from "./components/Loader";
 import TopNavBar from "./components/TopNavBar";
+import RACISection from "./components/RACISection";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -21,6 +22,8 @@ const TaskDetailScreen = () => {
   const [comments, setComments] = useState([]);
   const [attachments, setAttachments] = useState([]);
   const [expanded, setExpanded] = useState(false);
+  const [raci, setRaci] = useState(null);
+  const [raciLoading, setRaciLoading] = useState(true);
   const [currentUser, setCurrentUser] = useState(() => {
     const storedUser = localStorage.getItem("user");
     return storedUser ? JSON.parse(storedUser) : null;
@@ -48,6 +51,29 @@ const TaskDetailScreen = () => {
     document.addEventListener("keydown", handleEsc);
     return () => document.removeEventListener("keydown", handleEsc);
   }, []);
+
+  const fetchRACI = async () => {
+    try {
+      const res = await fetch(
+        `${API_URL}/api/tasks/${taskId}/raci`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          cache: "no-store",
+        }
+      );
+      if (!res.ok) throw new Error("Failed to fetch RACI data");
+      const data = await res.json();
+      console.log("RACI data:", data);
+      setRaci(data.data);
+    } catch (err) {
+      console.error("Error fetching RACI data:", err);
+    } finally {
+      setRaciLoading(false);
+    }
+  }
 
   const handleAttachmentUpload = async (file) => {
     if (!file) return;
@@ -162,6 +188,7 @@ const TaskDetailScreen = () => {
       fetchTaskDetails();
       fetchComments();
       fetchAttachments();
+      fetchRACI();
     }
   }, [taskId, token]);
 
@@ -314,6 +341,7 @@ const TaskDetailScreen = () => {
 
           {/* Comments & Attachments */}
           <div className="flex-1 space-y-4">
+            <RACISection raci={raci} loading={raciLoading} />
             <CommentsSection
               comments={comments}
               onAddComment={handleAddComment}
