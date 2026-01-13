@@ -113,6 +113,7 @@ const TaskDetailScreen = () => {
       );
       if (!res.ok) throw new Error("Failed to fetch attachments");
       const data = await res.json();
+      console.log("Attachments data:", data);
       setAttachments(data.attachments);
     } catch (err) {
       console.error(err);
@@ -155,6 +156,7 @@ const TaskDetailScreen = () => {
       );
       if (!res.ok) throw new Error("Failed to fetch comments");
       const data = await res.json();
+      console.log("Comments data:", data);
       setComments(data.comment);
     } catch (err) {
       console.error(err);
@@ -174,6 +176,7 @@ const TaskDetailScreen = () => {
 
         if (!res.ok) throw new Error("Failed to fetch task");
         const data = await res.json();
+        console.log("Task data:", data);
         setTask(data.task);
       } catch (err) {
         console.error(err);

@@ -144,6 +144,15 @@ const AttachmentsSection = ({
   return (
     <>
       <div className="bg-white border border-gray-200 rounded-lg p-5 shadow-sm">
+        <div className="flex items-center justify-between mb-4 border-b border-gray-200 pb-3">
+          <div className="flex items-center gap-2">
+            <h1 className="text-lg font-semibold text-gray-900">
+              ADD ATTACHMENTS
+            </h1>
+          </div>
+        </div>
+        
+        {/* Upload Area */}
         <div
           onClick={() => fileInputRef.current?.click()}
           onDragOver={handleDragOver}
