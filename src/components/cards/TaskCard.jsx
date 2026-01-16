@@ -1,9 +1,10 @@
-import { Eye, Edit, Trash2, User, Calendar } from "lucide-react";
+import { SquareCheckBig, Edit, Trash2, User, Users, Calendar } from "lucide-react";
 
 const TaskCard = ({
   tasks,
   onView,
   onEdit,
+  currentUser,
   onDelete,
   getPriorityColor,
   getStatusColor,
@@ -13,20 +14,30 @@ const TaskCard = ({
       {tasks.map((task) => (
         <div
           key={task.id}
+          onClick={() => onView(task.id)}
           className="bg-white rounded-xl shadow-lg border border-gray-200 p-4"
         >
-          {/* Title + Priority */}
+          {/* Title + Priority + Status */}
           <div className="flex justify-between items-center mb-2">
             <h3 className="font-semibold text-gray-900 text-sm sm:text-base">
               {task.title}
             </h3>
-            <span
+            <div className="flex justify-between gap-2">
+              <span
               className={`px-3 py-1 text-xs rounded border font-medium ${getPriorityColor(
                 task.priority
               )}`}
             >
               {task.priority}
             </span>
+            <span
+              className={`px-3 py-1 text-xs border rounded font-medium ${getStatusColor(
+                task.status
+              )}`}
+            >
+              {task.status}
+            </span>
+            </div>
           </div>
 
           {/* Assigned + Due Date */}
@@ -46,45 +57,67 @@ const TaskCard = ({
             </div>
           </div>
 
-          {/* Status + Actions */}
+          {/* RACI Roles + Actions */}
           <div className="flex justify-between items-center mt-3">
-            <span
-              className={`px-3 py-1 text-xs border rounded font-medium ${getStatusColor(
-                task.status
-              )}`}
-            >
-              {task.status}
-            </span>
+            <div className="flex items-center gap-2">
+              <Users className="w-5 h-5 text-gray-600" />
+              {(() => {
+                if (!currentUser?.id || !task.raciRoles?.length) return "N/A";
+
+                const roles = task.raciRoles
+                  .filter((r) => r.user?.id === currentUser.id)
+                  .map((r) => r.raciRole);
+
+                return roles.length ? roles.join(", ") : "N/A";
+              })()}
+            </div>
 
             <div className="flex space-x-2">
-              {/* View */}
-              <div className="relative group">
-                <button
-                  onClick={() => onView(task.id)}
-                  className="p-1.5 rounded-full bg-blue-50 border text-blue-600 hover:bg-blue-100 transition-colors"
-                >
-                  <Eye className="h-4 w-4" />
-                </button>
-              </div>
-
               {/* Edit */}
               <div className="relative group">
                 <button
-                  onClick={() => onEdit(task.id)}
-                  className="p-1.5 rounded-full bg-yellow-50 border text-yellow-600 hover:bg-yellow-100 transition-colors"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onEdit(task.id);
+                  }}
+                  className="p-1.5 rounded-full bg-yellow-50 border cursor-pointer text-yellow-600 hover:bg-yellow-100 transition-colors"
                 >
                   <Edit className="h-4 w-4" />
                 </button>
+                <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 text-xs text-white bg-gray-900 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-20">
+                  Edit Task
+                </span>
               </div>
 
               {/* Delete */}
               <div className="relative group">
                 <button
-                  onClick={() => onDelete(task.id)}
-                  className="p-1.5 rounded-full bg-red-50 border text-red-600 hover:bg-red-100 transition-colors"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onDelete(task.id);
+                  }}
+                  className="p-1.5 rounded-full bg-red-50 border text-red-600 cursor-pointer hover:bg-red-100 transition-colors"
                 >
                   <Trash2 className="h-4 w-4" />
                 </button>
+                <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 text-xs text-white bg-gray-900 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-20">
+                  Delete Task
+                </span>
+              </div>
+
+              {/* Mark Complete */}
+              <div className="relative group">
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                  }}
+                  className="p-1.5 rounded-full bg-green-50 border text-green-600 cursor-pointer hover:bg-green-100 transition-colors"
+                >
+                  <SquareCheckBig className="h-4 w-4" />
+                </button>
+                <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 text-xs text-white bg-gray-900 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-20">
+                  Complete Task
+                </span>
               </div>
             </div>
           </div>

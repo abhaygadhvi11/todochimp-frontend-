@@ -245,6 +245,12 @@ const DashboardPage = () => {
               <div className="min-h-[60vh] flex items-center justify-center">
                 <div className="text-center">
                   <p className="text-gray-500 text-lg">No Task found.</p>
+                  <span
+                    className="text-blue-600 mt-4 cursor-pointer"
+                    onClick={handleCreate}
+                  >
+                    Create your first task
+                  </span>
                 </div>
               </div>
             ) : (
@@ -254,6 +260,7 @@ const DashboardPage = () => {
                   tasks={currentTasks}
                   onView={handleDetail}
                   onEdit={handleEdit}
+                  currentUser={currentUser}
                   onDelete={handleDelete}
                   getPriorityColor={getPriorityColor}
                   getStatusColor={getStatusColor}
@@ -264,6 +271,7 @@ const DashboardPage = () => {
                   tasks={currentTasks}
                   onView={handleDetail}
                   onEdit={handleEdit}
+                  currentUser={currentUser}
                   onDelete={handleDelete}
                   getPriorityColor={getPriorityColor}
                   getStatusColor={getStatusColor}

@@ -1,4 +1,4 @@
-import { Users } from "lucide-react";
+import { Users, CircleCheckBig, Hourglass } from "lucide-react";
 
 const RACI_LABELS = {
   RESPONSIBLE: {
@@ -31,7 +31,7 @@ const RACISection = ({ raci, loading }) => {
   return (
     <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm">
       {/* Header */}
-      <div className="flex items-center gap-2 mb-4">
+      <div className="flex items-center border-b border-gray-200 pb-2 gap-2 mb-4">
         <Users className="w-5 h-5 text-gray-900" />
         <h1 className="text-lg font-semibold text-gray-900">
           RACI Assignments
@@ -59,9 +59,25 @@ const RACISection = ({ raci, loading }) => {
                   {users.map((item) => (
                     <li
                       key={item.id}
-                      className="text-sm font-medium text-gray-800"
+                      className="text-sm font-medium text-gray-800 gap-2 flex items-center justify-between"
                     >
                       {item.user?.name}
+                      <span
+                        className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium
+                          ${
+                            item.status === "ACTIVE"
+                              ? "bg-green-100 text-green-700"
+                              : "bg-gray-100 text-gray-600"
+                          }
+                        `}
+                      >
+                        {item.status === "ACTIVE" ? (
+                          <CircleCheckBig className="w-4 h-4" />
+                        ) : (
+                          <Hourglass className="w-4 h-4" />
+                        )}
+                        {item.status}
+                      </span>
                     </li>
                   ))}
                 </ul>
@@ -69,6 +85,13 @@ const RACISection = ({ raci, loading }) => {
             </div>
           );
         })}
+      </div>
+
+      {/* Summary */}
+      <div className="mt-4 pt-3 border-t border-gray-200 text-sm text-gray-600 flex gap-4">
+        <span>Total: {raci.summary.totalAssignments}</span>
+        <span>Active: {raci.summary.activeAssignments}</span>
+        <span>Pending: {raci.summary.pendingInvitations}</span>
       </div>
     </div>
   );

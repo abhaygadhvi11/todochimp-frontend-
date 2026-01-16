@@ -3,6 +3,7 @@ import { useParams, useNavigate, Link } from "react-router-dom";
 import {
   Calendar,
   User,
+  Building2,
 } from "lucide-react";
 import AttachmentsSection from "./components/AttachmentsSection";
 import CommentsSection from "./components/CommentsSection";
@@ -297,7 +298,7 @@ const TaskDetailScreen = () => {
             </div>
 
             {/* Info Grid */}
-            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 border-t border-gray-100 pt-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 border-t border-gray-100 pt-4">
               <div className="flex items-center gap-3">
                 <Calendar className="w-5 h-5 text-gray-400" />
                 <div>
@@ -336,6 +337,16 @@ const TaskDetailScreen = () => {
                   <p className="text-xs text-gray-500">CREATED AT</p>
                   <p className="text-sm font-medium text-gray-800">
                     {new Date(task.createdAt).toLocaleDateString()}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <Building2 className="w-5 h-5 text-gray-400" />
+                <div>
+                  <p className="text-xs text-gray-500">ORGANIZATION</p>
+                  <p className="text-sm font-medium text-gray-800">
+                    {task.organization?.name || "—"}
                   </p>
                 </div>
               </div>

@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { User, ChevronDown, LogOut, Menu, Mail, ArrowLeft } from "lucide-react";
+import { User, ChevronDown, LogOut, Menu, Mail, ArrowLeft, Settings } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 
 const TopNavBar = ({
@@ -115,13 +115,21 @@ const TopNavBar = ({
                     </div>
                   </div>
 
-                  {/* <Link
-                    to="/profile"
-                    className="block px-4 py-2 text-sm hover:bg-gray-100"
-                    onClick={() => setShowUserMenu(false)} // close on click
+                  <div
+                    className="block px-4 py-2 text-sm hover:bg-gray-100 cursor-pointer flex items-center"
+                    onClick={() => setShowUserMenu(false)}
                   >
+                    <User className="inline h-4 w-4 mr-2" />
                     Profile
-                  </Link> */}
+                  </div>
+
+                  <div
+                    className="block px-4 py-2 text-sm hover:bg-gray-100 cursor-pointer flex items-center"
+                    onClick={() => setShowUserMenu(false)}
+                  >
+                    <Settings className="inline h-4 w-4 mr-2" />
+                    Setting
+                  </div>
 
                   <button
                     onClick={() => {
