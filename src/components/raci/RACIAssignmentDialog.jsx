@@ -5,6 +5,7 @@ const RACIAssignmentDialog = ({ open, onClose, onSubmit }) => {
   const [raciAssignments, setRaciAssignments] = useState([
     { email: "", raciRole: "" },
   ]);
+
   const RACI_ROLES = [
     { value: "RESPONSIBLE", label: "Responsible" },
     { value: "ACCOUNTABLE", label: "Accountable" },
