@@ -1,15 +1,11 @@
 import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import {
-  Calendar,
-  User,
-  Building2,
-} from "lucide-react";
+import { Calendar, User, Building2, Check, AlertTriangle } from "lucide-react";
 import AttachmentsSection from "./components/AttachmentsSection";
 import CommentsSection from "./components/CommentsSection";
 import Loader from "./components/Loader";
 import TopNavBar from "./components/TopNavBar";
-import RACISection from "./components/RACISection";
+import RACISection from "./components/raci/RACISection";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -25,13 +21,14 @@ const TaskDetailScreen = () => {
   const [expanded, setExpanded] = useState(false);
   const [raci, setRaci] = useState(null);
   const [raciLoading, setRaciLoading] = useState(true);
+  const [showRaciSnackbar, setShowRaciSnackbar] = useState(false);
   const [currentUser, setCurrentUser] = useState(() => {
     const storedUser = localStorage.getItem("user");
     return storedUser ? JSON.parse(storedUser) : null;
   });
   const token = localStorage.getItem("token");
 
-  const userMenuRef = useRef(null); 
+  const userMenuRef = useRef(null);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -55,16 +52,13 @@ const TaskDetailScreen = () => {
 
   const fetchRACI = async () => {
     try {
-      const res = await fetch(
-        `${API_URL}/api/tasks/${taskId}/raci`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-          cache: "no-store",
-        }
-      );
+      const res = await fetch(`${API_URL}/api/tasks/${taskId}/raci`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        cache: "no-store",
+      });
       if (!res.ok) throw new Error("Failed to fetch RACI data");
       const data = await res.json();
       console.log("RACI data:", data);
@@ -74,7 +68,7 @@ const TaskDetailScreen = () => {
     } finally {
       setRaciLoading(false);
     }
-  }
+  };
 
   const handleAttachmentUpload = async (file) => {
     if (!file) return;
@@ -82,15 +76,12 @@ const TaskDetailScreen = () => {
     formData.append("file", file);
 
     try {
-      const res = await fetch(
-        `${API_URL}/api/tasks/${taskId}/attachments`,
-        {
-          method: "POST",
-          headers: { Authorization: `Bearer ${token}` },
-          body: formData,
-          cache: "no-store",
-        }
-      );
+      const res = await fetch(`${API_URL}/api/tasks/${taskId}/attachments`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+        body: formData,
+        cache: "no-store",
+      });
 
       if (!res.ok) throw new Error("Upload failed");
       await fetchAttachments();
@@ -102,16 +93,13 @@ const TaskDetailScreen = () => {
 
   const fetchAttachments = async () => {
     try {
-      const res = await fetch(
-        `${API_URL}/api/tasks/${taskId}/attachments`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-          cache: "no-store",
-        }
-      );
+      const res = await fetch(`${API_URL}/api/tasks/${taskId}/attachments`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        cache: "no-store",
+      });
       if (!res.ok) throw new Error("Failed to fetch attachments");
       const data = await res.json();
       console.log("Attachments data:", data);
@@ -124,17 +112,14 @@ const TaskDetailScreen = () => {
   const handleAddComment = async (commentText) => {
     if (!commentText.trim()) return;
     try {
-      const res = await fetch(
-        `${API_URL}/api/tasks/${taskId}/comments`,
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ content: commentText }),
-        }
-      );
+      const res = await fetch(`${API_URL}/api/tasks/${taskId}/comments`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ content: commentText }),
+      });
       if (!res.ok) throw new Error("Failed to post comment");
       await fetchComments();
     } catch (err) {
@@ -145,16 +130,13 @@ const TaskDetailScreen = () => {
 
   const fetchComments = async () => {
     try {
-      const res = await fetch(
-        `${API_URL}/api/tasks/${taskId}/comments`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-          cache: "no-store",
-        }
-      );
+      const res = await fetch(`${API_URL}/api/tasks/${taskId}/comments`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        cache: "no-store",
+      });
       if (!res.ok) throw new Error("Failed to fetch comments");
       const data = await res.json();
       console.log("Comments data:", data);
@@ -195,6 +177,27 @@ const TaskDetailScreen = () => {
       fetchRACI();
     }
   }, [taskId, token]);
+
+  const createRaciAssignments = async (assignments) => {
+    const res = await fetch(`${API_URL}/api/tasks/${taskId}/raci`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      cache: "no-store",
+      body: JSON.stringify({ assignments }),
+    });
+
+    const data = await res.json();
+    console.log("RACI response:", data);
+    setShowRaciSnackbar(true);
+    setTimeout(() => setShowRaciSnackbar(false), 3000);
+
+    await fetchRACI();
+
+    return data;
+  };
 
   const getStatusColor = (status) => {
     switch (status) {
@@ -261,14 +264,14 @@ const TaskDetailScreen = () => {
                 <div className="flex flex-wrap items-center gap-2">
                   <span
                     className={`px-2.5 py-1 text-xs font-medium rounded-md border ${getStatusColor(
-                      task.status
+                      task.status,
                     )}`}
                   >
                     {task.status}
                   </span>
                   <span
                     className={`px-2.5 py-1 text-xs font-medium rounded-md border ${getPriorityColor(
-                      task.priority
+                      task.priority,
                     )}`}
                   >
                     {task.priority}
@@ -282,8 +285,8 @@ const TaskDetailScreen = () => {
                   {expanded
                     ? task.description
                     : task.description.length > 120
-                    ? task.description.slice(0, 120) + "..."
-                    : task.description}
+                      ? task.description.slice(0, 120) + "..."
+                      : task.description}
 
                   {task.description.length > 120 && (
                     <button
@@ -355,7 +358,11 @@ const TaskDetailScreen = () => {
 
           {/* Comments & Attachments */}
           <div className="flex-1 space-y-4">
-            <RACISection raci={raci} loading={raciLoading} />
+            <RACISection
+              raci={raci}
+              loading={raciLoading}
+              onAddAssignments={createRaciAssignments}
+            />
             <CommentsSection
               comments={comments}
               onAddComment={handleAddComment}
@@ -369,6 +376,15 @@ const TaskDetailScreen = () => {
               taskId={taskId}
             />
           </div>
+
+          {showRaciSnackbar && (
+            <div className="fixed bottom-6 left-6 z-50 flex items-center gap-2 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg shadow-lg animate-fade-in-up transition-all">
+              <Check className="w-5 h-5 text-green-600" />
+              <p className="text-sm font-medium">
+                RACI Role added successfully!
+              </p>
+            </div>
+          )}
         </main>
       </div>
     </div>

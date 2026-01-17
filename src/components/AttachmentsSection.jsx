@@ -277,7 +277,7 @@ const AttachmentsSection = ({
 
         {previewFile && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-2 sm:px-4">
-            <div className=" relative bg-white rounded-xl shadow-2xl w-full max-w-[95vw] sm:max-w-3xl lg:max-w-4xl max-h-[95vh] flex flex-col animate-fadeIn">
+            <div className="relative bg-white rounded-xl shadow-2xl w-full max-w-[95vw] sm:max-w-3xl lg:max-w-4xl max-h-[95vh] flex flex-col animate-fadeIn">
               {/* Header */}
               <div className="sticky top-0 z-10 flex items-center justify-between gap-3 px-4 py-3 bg-white rounded-full">
                 <h3

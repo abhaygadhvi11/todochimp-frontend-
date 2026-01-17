@@ -1,4 +1,6 @@
-import { Users, CircleCheckBig, Hourglass } from "lucide-react";
+import { useState } from "react";
+import { Users, CircleCheckBig, Hourglass, Plus } from "lucide-react";
+import RACIAssignmentDialog from "./RaciAssignmentDialog.jsx";
 
 const RACI_LABELS = {
   RESPONSIBLE: {
@@ -19,7 +21,8 @@ const RACI_LABELS = {
   },
 };
 
-const RACISection = ({ raci, loading }) => {
+const RACISection = ({ raci, loading, onAddAssignments }) => {
+  const [openRaciDialog, setOpenRaciDialog] = useState(false);
   if (loading) {
     return (
       <div className="bg-white border rounded-xl p-5">
@@ -36,6 +39,18 @@ const RACISection = ({ raci, loading }) => {
         <h1 className="text-lg font-semibold text-gray-900">
           RACI Assignments
         </h1>
+
+        {/* Add RACI Assignment button to the right */}
+        <div className="ml-auto">
+          <button
+            onClick={() => setOpenRaciDialog(true)}
+            type="button"
+            className="flex items-center cursor-pointer justify-center gap-2 px-2 py-2 sm:px-4 sm:py-2 text-sm text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 font-medium rounded-lg transition-colors shadow-sm"
+          >
+            <Plus className="w-4 h-4" />
+            <span className="hidden sm:inline">Add Assignment</span>
+          </button>
+        </div>
       </div>
 
       {/* RACI Grid */}
@@ -67,7 +82,7 @@ const RACISection = ({ raci, loading }) => {
                           ${
                             item.status === "ACTIVE"
                               ? "bg-green-100 text-green-700"
-                              : "bg-gray-100 text-gray-600"
+                              : "bg-orange-100 text-orange-600"
                           }
                         `}
                       >
@@ -93,6 +108,13 @@ const RACISection = ({ raci, loading }) => {
         <span>Active: {raci.summary.activeAssignments}</span>
         <span>Pending: {raci.summary.pendingInvitations}</span>
       </div>
+
+      {/* RACI Dialog */}
+      <RACIAssignmentDialog
+        open={openRaciDialog}
+        onClose={() => setOpenRaciDialog(false)}
+        onSubmit={onAddAssignments}
+      />
     </div>
   );
 };
