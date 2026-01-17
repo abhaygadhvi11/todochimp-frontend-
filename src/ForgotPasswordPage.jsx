@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Mail } from "lucide-react";
+import { Mail, Check, AlertTriangle } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const API_URL = import.meta.env.VITE_API_URL;
@@ -8,6 +8,8 @@ export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState("");
+  const [showSendSnackbar, setShowSendSnackbar] = useState(false);
+  const [showSendFailSnackbar, setShowSendFailSnackbar] = useState(false);
 
   const handleSubmit = async () => {
     if (!email) {
@@ -31,11 +33,15 @@ export default function ForgotPasswordPage() {
       console.log(data);
 
       if (response.ok) {
-        setMessage("Password reset link sent to your email!");
+        setShowSendSnackbar(true);
+        setTimeout(() => {
+          setShowSendSnackbar(false);
+        }, 3000);
       } else {
-        setMessage(
-          data.error || data.message || "Failed to send reset password link"
-        );
+        setShowSendFailSnackbar(true);
+        setTimeout(() => {
+          setShowSendFailSnackbar(false);
+        }, 3000);
       }
     } catch (error) {
       console.log(error);
@@ -135,6 +141,24 @@ export default function ForgotPasswordPage() {
           </p>
         </div>
       </div>
+
+      {showSendSnackbar && (
+        <div className="fixed bottom-6 left-6 z-50 flex items-center gap-2 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg shadow-lg animate-fade-in-up transition-all">
+          <Check className="w-5 h-5 text-green-600" />
+          <p className="text-sm font-medium">
+            Password reset link sent to your email!
+          </p>
+        </div>
+      )}
+
+      {showSendFailSnackbar && (
+        <div className="fixed bottom-6 left-6 z-50 flex items-center gap-2 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg shadow-lg animate-fade-in-up transition-all">
+          <AlertTriangle className="w-5 h-5 text-red-600" />
+          <p className="text-sm font-medium">
+            Failed to send link
+          </p>
+        </div>
+      )}
     </div>
   );
 }

@@ -1,6 +1,6 @@
 //Login
 import { useState, useEffect } from "react";
-import { Eye, EyeOff, Mail, Lock } from "lucide-react";
+import { Eye, EyeOff, Mail, Lock, Check, AlertTriangle } from "lucide-react";
 import ForgotPasswordPage from "./ForgotPasswordPage";
 import ResetPasswordPage from "./ResetPasswordPage";
 import { Link, useNavigate } from "react-router-dom";
@@ -23,6 +23,8 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [currentView, setCurrentView] = useState("login");
   const [resetToken, setResetToken] = useState("");
+  const [showLoginSnackbar, setShowLoginSnackbar] = useState(false);
+  const [showLoginFailSnackbar, setShowLoginFailSnackbar] = useState(false);
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -99,10 +101,16 @@ export default function LoginPage() {
         };
         localStorage.setItem("token", data.data.token);
         localStorage.setItem("user", JSON.stringify(userData));
-        navigate("/dashboard");
+        setShowLoginSnackbar(true);
+        setTimeout(() => {
+          navigate("/dashboard");
+        },800);
         console.log("User logged in:", userData);
       } else {
-        setErrors({ general: data.error || data.message || "Login failed" });
+        setShowLoginFailSnackbar(true);
+        setTimeout(() => {
+          setShowLoginFailSnackbar(false);
+        }, 3000);
       }
     } catch (error) {
       console.log(error);
@@ -279,6 +287,24 @@ export default function LoginPage() {
           </p>
         </div>
       </div>
+      
+      {showLoginSnackbar && (
+        <div className="fixed bottom-6 left-6 z-50 flex items-center gap-2 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg shadow-lg animate-fade-in-up transition-all">
+          <Check className="w-5 h-5 text-green-600" />
+          <p className="text-sm font-medium">
+            Login successful. Redirecting to Dashboard...
+          </p>
+        </div>
+      )}
+
+      {showLoginFailSnackbar && (
+        <div className="fixed bottom-6 left-6 z-50 flex items-center gap-2 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg shadow-lg animate-fade-in-up transition-all">
+          <AlertTriangle className="w-5 h-5 text-red-600" />
+          <p className="text-sm font-medium">
+            Login failed. Please try again.
+          </p>
+        </div>
+      )}
     </div>
   );
 }
