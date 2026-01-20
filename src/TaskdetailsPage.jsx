@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { useParams, useNavigate, Link } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { Calendar, User, Building2, Check, Edit, Trash2 } from "lucide-react";
 import AttachmentsSection from "./components/AttachmentsSection";
 import CommentsSection from "./components/CommentsSection";
@@ -17,6 +17,7 @@ const TaskDetailScreen = () => {
   const [loading, setLoading] = useState(true);
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [comments, setComments] = useState([]);
+  const [showSnackbar, setShowSnackbar] = useState(false);
   const [attachments, setAttachments] = useState([]);
   const [expanded, setExpanded] = useState(false);
   const [raci, setRaci] = useState(null);
@@ -69,6 +70,33 @@ const TaskDetailScreen = () => {
       setRaciLoading(false);
     }
   };
+
+  const handleDelete = async () => {
+    if (!window.confirm("Are you sure you want to delete this task?")) return;
+
+    try {
+      const res = await fetch(`${API_URL}/api/tasks/${taskId}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        cache: "no-store",
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to delete task");
+
+      navigate("/dashboard", {
+        state: { deleted: true },
+      });
+    } catch (error) {
+      console.error("Delete error:", error);
+      alert(error.message);
+    }
+  };
+
+  const handleEdit = async () => navigate(`/tasks/${taskId}/edit`);
 
   const handleAttachmentUpload = async (file) => {
     if (!file) return;
@@ -268,6 +296,7 @@ const TaskDetailScreen = () => {
                   <div className="relative group">
                     <button
                       type="button"
+                      onClick={() => handleEdit(taskId)}
                       className="flex items-center gap-2 px-2 py-1 text-sm font-medium rounded-md border bg-yellow-50 text-yellow-700 border-yellow-200 hover:bg-yellow-100 transition cursor-pointer"
                     >
                       <Edit className="h-5 w-5" />
@@ -281,6 +310,7 @@ const TaskDetailScreen = () => {
                   <div className="relative group">
                     <button
                       type="button"
+                      onClick={handleDelete}
                       className="flex items-center gap-2 px-2 py-1 text-sm font-medium rounded-md border bg-red-50 text-red-600 border-red-200 hover:bg-red-100 transition cursor-pointer"
                     >
                       <Trash2 className="h-5 w-5" />

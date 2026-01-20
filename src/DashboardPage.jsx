@@ -1,7 +1,7 @@
 //Dashboard
 import React, { useState, useEffect } from "react";
 import { Check } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import TopNavBar from "./components/TopNavBar";
 import Loader from "./components/Loader";
 import Sidebar from "./components/Sidebar"
@@ -32,6 +32,15 @@ const DashboardPage = () => {
   });
   const token = localStorage.getItem("token");
   const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.state?.deleted) {
+      setShowSnackbar(true);
+      setTimeout(() => setShowSnackbar(false), 1500);
+      navigate(location.pathname, { replace: true });
+    }
+  }, [location.state, navigate, location.pathname]);
   
   useEffect(() => {
     const fetchTasks = async () => {
