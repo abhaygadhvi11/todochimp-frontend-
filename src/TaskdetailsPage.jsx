@@ -296,15 +296,23 @@ const TaskDetailScreen = () => {
                   <div className="relative group">
                     <button
                       type="button"
-                      onClick={() => handleEdit(taskId)}
-                      className="flex items-center gap-2 px-2 py-1 text-sm font-medium rounded-md border bg-yellow-50 text-yellow-700 border-yellow-200 hover:bg-yellow-100 transition cursor-pointer"
+                      onClick={() => {
+                        if (task.status !== "COMPLETED") {
+                          handleEdit();
+                        }
+                      }}
+                      className={`flex items-center gap-2 px-2 py-1 text-sm font-medium rounded-md border bg-yellow-50 text-yellow-700 border-yellow-200 hover:bg-yellow-100 transition 
+                        ${task.status === "COMPLETED" ? "cursor-not-allowed opacity-50" : "cursor-pointer"}  
+                      `}
                     >
                       <Edit className="h-5 w-5" />
                       <span className="hidden sm:inline">Edit</span>
                     </button>
-                    <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 text-xs text-white bg-gray-900 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-20">
-                      Edit Task
-                    </span>
+                    {task.status !== "COMPLETED" && (
+                      <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 text-xs text-white bg-gray-900 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-20">
+                        Edit Task
+                      </span>
+                    )}
                   </div>
 
                   <div className="relative group">
