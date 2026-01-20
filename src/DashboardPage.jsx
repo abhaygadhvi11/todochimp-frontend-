@@ -1,10 +1,6 @@
 //Dashboard
 import React, { useState, useEffect } from "react";
-import {
-  ChevronLeft,
-  ChevronRight,
-  Check,
-} from "lucide-react";
+import { Check } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import TopNavBar from "./components/TopNavBar";
 import Loader from "./components/Loader";
@@ -12,6 +8,7 @@ import Sidebar from "./components/Sidebar"
 import Toolbar from "./components/Toolbar"
 import TaskTable from "./components/table/TaskTable"
 import TaskCard from "./components/cards/TaskCard"
+import Pagination from "./components/common/Pagination";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -24,10 +21,11 @@ const DashboardPage = () => {
   const [sortOrder, setSortOrder] = useState("asc");
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
-  const [tasksPerPage] = useState(20);
+  const [tasksPerPage, setTasksPerPage] = useState(20);
   const [totalPages, setTotalPages] = useState(1);
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);
   const [showSnackbar, setShowSnackbar] = useState(false);
+  const [showStatusSnackbar, setShowStatusSnackbar] = useState(false);
   const [currentUser, setCurrentUser] = useState(() => {
     const storedUser = localStorage.getItem("user");
     return storedUser ? JSON.parse(storedUser) : null;
@@ -88,6 +86,7 @@ const DashboardPage = () => {
     currentUser,
     currentPage,
     searchTerm,
+    tasksPerPage,
     sortBy,
     sortOrder,
     selectedFilter,
@@ -115,6 +114,35 @@ const DashboardPage = () => {
     } catch (error) {
       console.error("Delete error:", error);
       alert(error.message);
+    }
+  };
+
+  const handleComplete = async (taskId) => {
+    try {
+      const res = await fetch(`${API_URL}/api/tasks/${taskId}`, {
+        method: "PUT",
+
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+
+        body: JSON.stringify({ status: "COMPLETED" }),
+        cache: "no-store",
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to complete task");
+
+      setTasks((prevTasks) =>
+        prevTasks.map((task) => task.id === taskId ? { ...task, status: "COMPLETED" } : task)
+      );
+
+      setShowStatusSnackbar(true);
+      setTimeout(() => setShowStatusSnackbar(false), 3000);
+      console.log("Task completed:", data);
+    } catch (error) {
+      console.error("Complete error:", error);
     }
   };
 
@@ -262,6 +290,7 @@ const DashboardPage = () => {
                   onEdit={handleEdit}
                   currentUser={currentUser}
                   onDelete={handleDelete}
+                  onComplete={handleComplete}
                   getPriorityColor={getPriorityColor}
                   getStatusColor={getStatusColor}
                 />
@@ -272,59 +301,33 @@ const DashboardPage = () => {
                   onView={handleDetail}
                   onEdit={handleEdit}
                   currentUser={currentUser}
+                  onComplete={handleComplete}
                   onDelete={handleDelete}
                   getPriorityColor={getPriorityColor}
                   getStatusColor={getStatusColor}
                 />
 
                 {/* Pagination */}
-                <div className="flex justify-center items-center mt-8 space-x-1 sm:space-x-2">
-                  <button
-                    onClick={() =>
-                      setCurrentPage((prev) => Math.max(prev - 1, 1))
-                    }
-                    disabled={currentPage === 1}
-                    className="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded text-xs sm:text-sm hover:bg-gray-200 disabled:opacity-50 cursor-pointer"
-                  >
-                    <ChevronLeft className="h-4 w-4 text-black" />
-                  </button>
-
-                  {/* Page Numbers */}
-                  {getPageNumbers().map((item, index) => (
-                    <button
-                      key={index}
-                      onClick={() => item !== "..." && setCurrentPage(item)}
-                      disabled={item === "..."}
-                      className={`flex items-center justify-center rounded transition-all w-8 h-8 sm:w-10 sm:h-10 text-xs sm:text-sm font-medium
-                        ${
-                          item === currentPage
-                            ? "border-2 border-blue-500 bg-grey-200 text-black shadow-md"
-                            : item === "..."
-                            ? "cursor-default text-gray-500"
-                            : "hover:bg-gray-200 cursor-pointer"
-                        }
-                      `}
-                    >
-                      {item}
-                    </button>
-                  ))}
-
-                  {/* Next Button */}
-                  <button
-                    onClick={() =>
-                      setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-                    }
-                    disabled={currentPage === totalPages}
-                    className="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded text-xs sm:text-sm hover:bg-gray-200 disabled:opacity-50 cursor-pointer"
-                  >
-                    <ChevronRight className="h-4 w-4 text-black" />
-                  </button>
-                </div>
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  setCurrentPage={setCurrentPage}
+                  getPageNumbers={getPageNumbers}
+                  tasksPerPage={tasksPerPage}
+                  setTasksPerPage={setTasksPerPage}
+                />
               </>
             )}
           </main>
 
-          {/* Snackbar for successful deletion */}
+          {/* Snackbar for success*/}
+          {showStatusSnackbar && (
+            <div className="fixed bottom-6 left-6 flex items-center gap-2 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg shadow-md transition-all animate-fade-in-up z-50">
+              <Check className="w-5 h-5 text-green-600" />
+              <p className="text-sm font-medium">Status Updated successfully!</p>
+            </div>
+          )}
+
           {showSnackbar && (
             <div className="fixed bottom-6 left-6 flex items-center gap-2 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg shadow-md transition-all animate-fade-in-up z-50">
               <Check className="w-5 h-5 text-green-600" />

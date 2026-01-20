@@ -1,4 +1,11 @@
-import { SquareCheckBig, Edit, Trash2, User, Users, Calendar } from "lucide-react";
+import {
+  SquareCheckBig,
+  Edit,
+  Trash2,
+  User,
+  Users,
+  Calendar,
+} from "lucide-react";
 
 const TaskCard = ({
   tasks,
@@ -6,10 +13,11 @@ const TaskCard = ({
   onEdit,
   currentUser,
   onDelete,
+  onComplete,
   getPriorityColor,
   getStatusColor,
 }) => {
-    return (
+  return (
     <div className="space-y-4 xl:hidden max-h-[65vh] overflow-y-auto overflow-x-hidden pr-1.5 mt-6">
       {tasks.map((task) => (
         <div
@@ -24,19 +32,19 @@ const TaskCard = ({
             </h3>
             <div className="flex justify-between gap-2">
               <span
-              className={`px-3 py-1 text-xs rounded border font-medium ${getPriorityColor(
-                task.priority
-              )}`}
-            >
-              {task.priority}
-            </span>
-            <span
-              className={`px-3 py-1 text-xs border rounded font-medium ${getStatusColor(
-                task.status
-              )}`}
-            >
-              {task.status}
-            </span>
+                className={`px-3 py-1 text-xs rounded border font-medium ${getPriorityColor(
+                  task.priority,
+                )}`}
+              >
+                {task.priority}
+              </span>
+              <span
+                className={`px-3 py-1 text-xs border rounded font-medium ${getStatusColor(
+                  task.status,
+                )}`}
+              >
+                {task.status}
+              </span>
             </div>
           </div>
 
@@ -78,15 +86,25 @@ const TaskCard = ({
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
-                    onEdit(task.id);
+                    if (task.status !== "COMPLETED") {
+                      onEdit(task.id);
+                    }
                   }}
-                  className="p-1.5 rounded-full bg-yellow-50 border cursor-pointer text-yellow-600 hover:bg-yellow-100 transition-colors"
+                  className={`p-1.5 rounded-full border transition-colors bg-yellow-50 text-yellow-600 
+                    ${
+                      task.status === "COMPLETED"
+                        ? "cursor-not-allowed opacity-50"
+                        : "cursor-pointer hover:bg-yellow-100"
+                    }
+                  `}
                 >
                   <Edit className="h-4 w-4" />
                 </button>
-                <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 text-xs text-white bg-gray-900 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-20">
-                  Edit Task
-                </span>
+                {task.status !== "COMPLETED" && (
+                  <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 text-xs text-white bg-gray-900 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-20">
+                    Edit Task
+                  </span>
+                )}
               </div>
 
               {/* Delete */}
@@ -110,14 +128,26 @@ const TaskCard = ({
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
+                    if (task.status !== "COMPLETED") {
+                      onComplete(task.id);
+                    }
                   }}
-                  className="p-1.5 rounded-full bg-green-50 border text-green-600 cursor-pointer hover:bg-green-100 transition-colors"
+                  disabled={task.status === "COMPLETED"}
+                  className={`p-2 rounded-full border transition-colors bg-green-50 text-green-600 
+                    ${
+                      task.status === "COMPLETED"
+                        ? "cursor-not-allowed opacity-50"
+                        : "cursor-pointer hover:bg-green-100"
+                    }
+                  `}
                 >
                   <SquareCheckBig className="h-4 w-4" />
                 </button>
-                <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 text-xs text-white bg-gray-900 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-20">
-                  Complete Task
-                </span>
+                {task.status !== "COMPLETED" && (
+                  <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 text-xs text-white bg-gray-900 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-20">
+                    Complete Task
+                  </span>
+                )}
               </div>
             </div>
           </div>

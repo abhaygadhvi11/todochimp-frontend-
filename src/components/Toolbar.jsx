@@ -35,7 +35,7 @@ const Toolbar = ({
         <select
           value={sortBy}
           onChange={(e) => setSortBy(e.target.value)}
-          className="border rounded-md cursor-pointer px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 bg-white border-gray-300"
+          className="border rounded-md cursor-pointer px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white border-gray-300"
         >
           <option value="title">Title</option>
           <option value="status">Status</option>

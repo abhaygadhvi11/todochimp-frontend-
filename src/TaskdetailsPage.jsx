@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { Calendar, User, Building2, Check, AlertTriangle } from "lucide-react";
+import { Calendar, User, Building2, Check, Edit, Trash2 } from "lucide-react";
 import AttachmentsSection from "./components/AttachmentsSection";
 import CommentsSection from "./components/CommentsSection";
 import Loader from "./components/Loader";
@@ -257,25 +257,39 @@ const TaskDetailScreen = () => {
         <main className="flex-1 overflow-auto p-4 sm:p-6">
           <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-5 mb-6">
             <div className="mb-4">
-              <div className="flex flex-wrap items-center justify-between gap-3">
-                <h1 className="text-xl sm:text-2xl font-semibold text-gray-900">
+              <div className="flex items-start justify-between gap-3">
+                {/* Title */}
+                <h1 className="text-xl sm:text-2xl font-semibold text-gray-900 leading-tight pr-2 break-words max-w-[75%]">
                   {task.title}
                 </h1>
+
+                {/* Action buttons */}
                 <div className="flex flex-wrap items-center gap-2">
-                  <span
-                    className={`px-2.5 py-1 text-xs font-medium rounded-md border ${getStatusColor(
-                      task.status,
-                    )}`}
-                  >
-                    {task.status}
-                  </span>
-                  <span
-                    className={`px-2.5 py-1 text-xs font-medium rounded-md border ${getPriorityColor(
-                      task.priority,
-                    )}`}
-                  >
-                    {task.priority}
-                  </span>
+                  <div className="relative group">
+                    <button
+                      type="button"
+                      className="flex items-center gap-2 px-2 py-1 text-sm font-medium rounded-md border bg-yellow-50 text-yellow-700 border-yellow-200 hover:bg-yellow-100 transition cursor-pointer"
+                    >
+                      <Edit className="h-5 w-5" />
+                      <span className="hidden sm:inline">Edit</span>
+                    </button>
+                    <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 text-xs text-white bg-gray-900 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-20">
+                      Edit Task
+                    </span>
+                  </div>
+
+                  <div className="relative group">
+                    <button
+                      type="button"
+                      className="flex items-center gap-2 px-2 py-1 text-sm font-medium rounded-md border bg-red-50 text-red-600 border-red-200 hover:bg-red-100 transition cursor-pointer"
+                    >
+                      <Trash2 className="h-5 w-5" />
+                      <span className="hidden sm:inline">Delete</span>
+                    </button>
+                    <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 text-xs text-white bg-gray-900 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-20">
+                      Delete Task
+                    </span>
+                  </div>
                 </div>
               </div>
 
@@ -298,6 +312,25 @@ const TaskDetailScreen = () => {
                   )}
                 </p>
               )}
+
+              {/* Status & Priority */}
+              <div className="mt-2 flex flex-wrap items-center gap-2">
+                <span
+                  className={`px-2.5 py-1 text-xs font-medium rounded-md border ${getStatusColor(
+                    task.status
+                  )}`}
+                >
+                  {task.status}
+                </span>
+
+                <span
+                  className={`px-2.5 py-1 text-xs font-medium rounded-md border ${getPriorityColor(
+                    task.priority
+                  )}`}
+                >
+                  {task.priority}
+                </span>
+              </div>
             </div>
 
             {/* Info Grid */}
