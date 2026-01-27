@@ -3,6 +3,7 @@ import { AlertCircle, Check, X, Save, Trash2, Users, ArrowLeft } from "lucide-re
 import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import TaskForm from "./components/form/TaskForm.jsx";
+import Snackbar from "./components/common/Snackbar.jsx";
 
 const API_URL = import.meta.env.VITE_API_URL;
 const apiKey = import.meta.env.VITE_API_KEY;
@@ -27,20 +28,29 @@ const TaskFormPage = ({ mode }) => {
   const [errors, setErrors] = useState({});
   const [raciErrors, setRaciErrors] = useState([]);
   const [isEdit, setIsEdit] = useState(false);
-  const [showSuccess, setShowSuccess] = useState(false);
   const [isDirty, setIsDirty] = useState(false);
   const [loading, setLoading] = useState(false);
   const [isLoading, setSaveLoading] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
   const [originalTask, setOriginalTask] = useState(null);
-  const [showRaciSnackbar, setShowRaciSnackbar] = useState(false);
-  const [showApiLimitSnackbar, setShowApiLimitSnackbar] = useState(false);
+  const [snackbar, setSnackbar] = useState({ 
+    open: false,
+    message: "",
+    type: "success"
+  });
   const token = localStorage.getItem("token");
   const isAssigneeOnly =
     originalTask &&
     currentUser &&
     originalTask.assignedToId === currentUser.id &&
     originalTask.createdById !== currentUser.id;
+
+  const showSnackbarMessage = (message, type = "success", duration = 2500) => {
+    setSnackbar({ open: true, message, type });
+    setTimeout(() => {
+      setSnackbar(prev => ({ ...prev, open: false }));
+    }, duration);
+  };
 
   useEffect(() => {
     if (mode === "edit" && taskId) {
@@ -173,8 +183,7 @@ const TaskFormPage = ({ mode }) => {
       const data = await res.json();
 
       if (res.status === 429) {
-        setShowApiLimitSnackbar(true);
-        setTimeout(() => setShowApiLimitSnackbar(false), 3000)
+        showSnackbarMessage("API-Key limit exceeded. Upgrade your plan.", "error");
       }
 
       if (data.generated_description) {
@@ -236,8 +245,7 @@ const TaskFormPage = ({ mode }) => {
         console.log("RACI role updated:", result);
 
         // Show success snackbar
-        setShowRaciSnackbar(true);
-        setTimeout(() => setShowRaciSnackbar(false), 3000);
+        showSnackbarMessage("RACI role updated successfully!", "success");
       } catch (error) {
         console.error("Error updating RACI role:", error);
         alert("Failed to update RACI role. Please try again.");
@@ -435,7 +443,7 @@ const TaskFormPage = ({ mode }) => {
       const result = await res.json();
       const savedTask = result.data;
 
-      setShowSuccess(true);
+      showSnackbarMessage(`Task ${isEdit ? "Updated" : "Created"} successfully!`, "success");
       setIsDirty(false);
       setTimeout(() => navigate("/dashboard"), 1200);
 
@@ -583,16 +591,6 @@ const TaskFormPage = ({ mode }) => {
                 </div>
               )}
 
-              {/* Success Message */}
-              {showSuccess && (
-                <div className="fixed bottom-6 left-6 z-50 flex items-center gap-2 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg shadow-lg animate-fade-in-up transition-all">
-                  <Check className="w-5 h-5 text-green-600 mr-3" />
-                  <p className="text-green-700 text-sm">
-                    Your task has been {isEdit ? "updated" : "created"} successfully.
-                  </p>
-                </div>
-              )}
-
               {/* Form */}
               <TaskForm
                 titleRef={titleRef}
@@ -603,8 +601,7 @@ const TaskFormPage = ({ mode }) => {
                 isAssigneeOnly={isAssigneeOnly}
                 isEdit={isEdit}
                 loading={loading}
-                showApiLimitSnackbar={showApiLimitSnackbar}
-                showRaciSnackbar={showRaciSnackbar}
+                snackbar={snackbar}
                 today={today}
                 daysUntilDue={daysUntilDue}
                 priorities={priorities}

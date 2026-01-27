@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Users, CircleCheckBig, Hourglass, Plus } from "lucide-react";
-import RACIAssignmentDialog from "./RaciAssignmentDialog.jsx";
+import RACIAssignmentDialog from "./RACIAssignmentDialog.jsx";
 
 const RACI_LABELS = {
   RESPONSIBLE: {

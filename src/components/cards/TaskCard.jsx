@@ -133,7 +133,7 @@ const TaskCard = ({
                     }
                   }}
                   disabled={task.status === "COMPLETED"}
-                  className={`p-2 rounded-full border transition-colors bg-green-50 text-green-600 
+                  className={`p-1.5 rounded-full border transition-colors bg-green-50 text-green-600 
                     ${
                       task.status === "COMPLETED"
                         ? "cursor-not-allowed opacity-50"

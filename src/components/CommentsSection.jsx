@@ -1,10 +1,22 @@
 import { useState } from "react";
-import { MessageSquare, User, Send, Check } from "lucide-react";
+import { User, Send } from "lucide-react";
+import Snackbar from "./common/Snackbar";
 
 const CommentsSection = ({ comments = [], onAddComment }) => {
   const [commentText, setCommentText] = useState("");
   const [loading, setLoading] = useState(false);
-  const [showUploadSnackbar, setShowUploadSnackbar] = useState(false);
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    type: "success",
+    message: "",
+  });
+
+  const showSnackbarMessage = (message, type = "success", duration = 2500) => {
+    setSnackbar({ open: true, message, type });
+    setTimeout(() => {
+      setSnackbar((prev) => ({ ...prev, open: false }));
+    }, duration);
+  };
 
   const handlePost = async () => {
     if (!commentText.trim()) return;
@@ -12,8 +24,7 @@ const CommentsSection = ({ comments = [], onAddComment }) => {
 
     try {
       await onAddComment(commentText);
-      setShowUploadSnackbar(true);
-      setTimeout(() => setShowUploadSnackbar(false), 2500);
+      showSnackbarMessage("Comment added successfully!", "success");
       setCommentText(""); 
     } catch (err) {
       console.error("Error adding comment:", err);
@@ -99,12 +110,11 @@ const CommentsSection = ({ comments = [], onAddComment }) => {
       </div>
 
       {/* Snackbar */}
-      {showUploadSnackbar && (
-        <div className="fixed bottom-6 left-6 z-50 flex items-center gap-2 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg shadow-md transition-all animate-fade-in-up">
-          <Check className="w-5 h-5 text-green-600" />
-          <p className="text-sm">Comment added successfully</p>
-        </div>
-      )}
+      <Snackbar
+        open={snackbar.open}
+        message={snackbar.message}
+        type={snackbar.type}
+      />
     </div>
   );
 };

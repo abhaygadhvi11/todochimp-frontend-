@@ -7,10 +7,9 @@ import {
   User,
   UserCheck,
   Building,
-  Check,
-  AlertTriangle,
 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
+import Snackbar from "./components/common/Snackbar";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -27,8 +26,18 @@ export default function SignupPage() {
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [showSignupSnackbar, setShowSignupSnackbar] = useState(false);
-  const [showSignupFailSnackbar, setShowSignupFailSnackbar] = useState(false);
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: "",
+    type: "success"
+  });
+
+  const showSnackbarMessage = (message, type = "success", duration = 2500) => {
+    setSnackbar({ open: true, message, type });
+    setTimeout(() => {
+      setSnackbar((prev) => ({ ...prev, open: false }));
+    }, duration);
+  }
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -96,16 +105,13 @@ export default function SignupPage() {
         localStorage.setItem("user", JSON.stringify(userData));
         localStorage.setItem("token", data.data.token);
 
-        setShowSignupSnackbar(true);
+        showSnackbarMessage("Registration Successful!", "success");
         setTimeout(() => {
           navigate("/dashboard");
         }, 800);
         console.log("User registered and logged in:", userData);
       } else {
-        setShowSignupFailSnackbar(true);
-        setTimeout(() => {
-          setShowSignupFailSnackbar(false);
-        }, 3000);
+        showSnackbarMessage("Registration failed. Please try again.", "error");
       }
     } catch (error) {
       console.log(error);
@@ -370,23 +376,11 @@ export default function SignupPage() {
         </div>
       </div>
 
-      {showSignupSnackbar && (
-        <div className="fixed bottom-6 left-6 z-50 flex items-center gap-2 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg shadow-lg animate-fade-in-up transition-all">
-          <Check className="w-5 h-5 text-green-600" />
-          <p className="text-sm font-medium">
-            Registration Successfull
-          </p>
-        </div>
-      )}
-
-      {showSignupFailSnackbar && (
-        <div className="fixed bottom-6 left-6 z-50 flex items-center gap-2 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg shadow-lg animate-fade-in-up transition-all">
-          <AlertTriangle className="w-5 h-5 text-red-600" />
-          <p className="text-sm font-medium">
-            Registration failed. Please try again.
-          </p>
-        </div>
-      )}
+      <Snackbar
+        open={snackbar.open}
+        message={snackbar.message}
+        type={snackbar.type}
+      />
     </div>
   );
 }

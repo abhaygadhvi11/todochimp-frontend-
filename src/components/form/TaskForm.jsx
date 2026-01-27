@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 
 import AIButton from "../AIButton.jsx";
+import Snackbar from "../common/Snackbar.jsx";
 
 const TaskForm = ({
   // refs
@@ -28,8 +29,7 @@ const TaskForm = ({
   isAssigneeOnly,
   isEdit,
   loading,
-  showApiLimitSnackbar,
-  showRaciSnackbar,
+  snackbar,
   // helpers
   today,
   daysUntilDue,
@@ -157,15 +157,6 @@ const TaskForm = ({
           </div>
         )}
       </div>
-
-      {showApiLimitSnackbar && (
-        <div className="fixed bottom-6 left-6 z-50 flex items-center gap-2 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg shadow-lg animate-fade-in-up transition-all">
-          <AlertTriangle className="w-5 h-5 text-red-600" />
-          <p className="text-sm font-medium">
-            API-Key limit exceeded. Upgrade your plan.
-          </p>
-        </div>
-      )}
 
       {/* Priority and Due Date Row */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -601,15 +592,6 @@ const TaskForm = ({
             ))}
           </div>
         )}
-
-        {showRaciSnackbar && (
-          <div className="fixed bottom-6 left-6 z-50 flex items-center gap-2 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg shadow-lg animate-fade-in-up transition-all">
-            <Check className="w-5 h-5 text-green-600" />
-            <p className="text-sm font-medium">
-              RACI Role updated successfully.
-            </p>
-          </div>
-        )}
       </div>
 
       {/* Organization Field (Readonly) */}
@@ -639,6 +621,12 @@ const TaskForm = ({
           Organization is automatically assigned based on your account
         </p>
       </div>
+
+      <Snackbar 
+        message={snackbar.message} 
+        type={snackbar.type} 
+        open={snackbar.open}
+      />
     </div>
   );
 };

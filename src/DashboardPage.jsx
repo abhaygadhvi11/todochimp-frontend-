@@ -1,6 +1,5 @@
 //Dashboard
 import React, { useState, useEffect } from "react";
-import { Check } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import TopNavBar from "./components/TopNavBar";
 import Loader from "./components/Loader";
@@ -9,6 +8,7 @@ import Toolbar from "./components/Toolbar"
 import TaskTable from "./components/table/TaskTable"
 import TaskCard from "./components/cards/TaskCard"
 import Pagination from "./components/common/Pagination";
+import Snackbar from "./components/common/Snackbar";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -24,8 +24,11 @@ const DashboardPage = () => {
   const [tasksPerPage, setTasksPerPage] = useState(20);
   const [totalPages, setTotalPages] = useState(1);
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);
-  const [showSnackbar, setShowSnackbar] = useState(false);
-  const [showStatusSnackbar, setShowStatusSnackbar] = useState(false);
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    type: "success",
+    message: "",
+  });
   const [currentUser, setCurrentUser] = useState(() => {
     const storedUser = localStorage.getItem("user");
     return storedUser ? JSON.parse(storedUser) : null;
@@ -34,10 +37,16 @@ const DashboardPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
+  const showSnackbarMessage = (message, type = "success", duration = 2500) => {
+    setSnackbar({ open: true, message, type });
+    setTimeout(() => {
+      setSnackbar((prev) => ({ ...prev, open: false }));
+    }, duration);
+  };
+
   useEffect(() => {
     if (location.state?.deleted) {
-      setShowSnackbar(true);
-      setTimeout(() => setShowSnackbar(false), 1500);
+      showSnackbarMessage("Task deleted successfully!", "success");
       navigate(location.pathname, { replace: true });
     }
   }, [location.state, navigate, location.pathname]);
@@ -118,8 +127,7 @@ const DashboardPage = () => {
 
       if (!res.ok) throw new Error(data.error || "Failed to delete task");
       setTasks((prevTasks) => prevTasks.filter((task) => task.id !== taskId));
-      setShowSnackbar(true);
-      setTimeout(() => setShowSnackbar(false), 2500);
+      showSnackbarMessage("Task deleted successfully!", "success");
     } catch (error) {
       console.error("Delete error:", error);
       alert(error.message);
@@ -147,8 +155,7 @@ const DashboardPage = () => {
         prevTasks.map((task) => task.id === taskId ? { ...task, status: "COMPLETED" } : task)
       );
 
-      setShowStatusSnackbar(true);
-      setTimeout(() => setShowStatusSnackbar(false), 3000);
+      showSnackbarMessage("Status Updated successfully!", "success");
       console.log("Task completed:", data);
     } catch (error) {
       console.error("Complete error:", error);
@@ -330,19 +337,11 @@ const DashboardPage = () => {
           </main>
 
           {/* Snackbar for success*/}
-          {showStatusSnackbar && (
-            <div className="fixed bottom-6 left-6 flex items-center gap-2 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg shadow-md transition-all animate-fade-in-up z-50">
-              <Check className="w-5 h-5 text-green-600" />
-              <p className="text-sm font-medium">Status Updated successfully!</p>
-            </div>
-          )}
-
-          {showSnackbar && (
-            <div className="fixed bottom-6 left-6 flex items-center gap-2 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg shadow-md transition-all animate-fade-in-up z-50">
-              <Check className="w-5 h-5 text-green-600" />
-              <p className="text-sm font-medium">Task deleted successfully!</p>
-            </div>
-          )}
+          <Snackbar
+            open={snackbar.open}
+            type={snackbar.type}
+            message={snackbar.message}
+          />
         </div>
       </div>
     </div>

@@ -1,7 +1,8 @@
 import { useRef, useState } from "react";
-import { FileText, FileImage, File, Upload, Check, X } from "lucide-react";
+import { FileText, FileImage, File, Upload, X } from "lucide-react";
 import AttachmentsTable from "./table/AttachmentsTable";
 import AttachmentsCard from "./cards/AttachmentsCard";
+import Snackbar from "./common/Snackbar";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -40,8 +41,11 @@ const AttachmentsSection = ({
 }) => {
   const fileInputRef = useRef(null);
   const [pendingFiles, setPendingFiles] = useState([]);
-  const [showUploadSnackbar, setShowUploadSnackbar] = useState(false);
-  const [showDeleteSnackbar, setShowDeleteSnackbar] = useState(false);
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    type: "success",
+    message: "",
+  });
   const [uploading, setUploading] = useState(false);
   const [previewFile, setPreviewFile] = useState(null);
   const [isDragging, setIsDragging] = useState(false);
@@ -49,6 +53,13 @@ const AttachmentsSection = ({
   const isImage = (ext) => ["jpg", "jpeg", "png"].includes(ext);
   const isPDF = (ext) => ext === "pdf";
   const isText = (ext) => ext === "txt";
+
+  const showSnackbarMessage = (message, type = "success", duration = 2500) => {
+    setSnackbar({ open: true, message, type });
+    setTimeout(() => {
+      setSnackbar((prev) => ({ ...prev, open: false }));
+    }, duration);
+  };
 
   const decodeBase64Text = (base64) => {
     try {
@@ -77,8 +88,7 @@ const AttachmentsSection = ({
         await onUpload?.(file);
       }
       setPendingFiles([]);
-      setShowUploadSnackbar(true);
-      setTimeout(() => setShowUploadSnackbar(false), 2500);
+      showSnackbarMessage("Files uploaded successfully", "success");
     } catch (err) {
       console.error("Upload failed:", err);
       alert("Failed to upload files.");
@@ -107,8 +117,7 @@ const AttachmentsSection = ({
 
       if (res.ok && data.success) {
         onRemove?.(attachmentId);
-        setShowDeleteSnackbar(true);
-        setTimeout(() => setShowDeleteSnackbar(false), 2500);
+        showSnackbarMessage("File deleted successfully", "success");
       } else {
         alert(data.error || "Failed to delete attachment");
       }
@@ -342,19 +351,11 @@ const AttachmentsSection = ({
         )}
 
         {/* Upload Snackbar */}
-        {showUploadSnackbar && (
-          <div className="fixed bottom-6 left-6 flex items-center gap-2 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg shadow-md transition-all animate-fade-in-up z-50">
-            <Check className="w-5 h-5 text-green-600" />
-            <p className="text-sm">Files uploaded successfully</p>
-          </div>
-        )}
-
-        {showDeleteSnackbar && (
-          <div className="fixed bottom-6 left-6 flex items-center gap-2 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg shadow-md transition-all animate-fade-in-up z-50">
-            <Check className="w-5 h-5 text-green-600" />
-            <p className="text-sm">File deleted successfully</p>
-          </div>
-        )}
+        <Snackbar
+          open={snackbar.open}
+          message={snackbar.message}
+          type={snackbar.type}
+        />
       </div>
     </>
   );

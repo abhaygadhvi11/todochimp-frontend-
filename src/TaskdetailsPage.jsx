@@ -1,11 +1,12 @@
 import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Calendar, User, Building2, Check, Edit, Trash2 } from "lucide-react";
+import { Calendar, User, Building2, Edit, Trash2 } from "lucide-react";
 import AttachmentsSection from "./components/AttachmentsSection";
 import CommentsSection from "./components/CommentsSection";
 import Loader from "./components/Loader";
 import TopNavBar from "./components/TopNavBar";
 import RACISection from "./components/raci/RACISection";
+import Snackbar from "./components/common/Snackbar.jsx";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -17,12 +18,15 @@ const TaskDetailScreen = () => {
   const [loading, setLoading] = useState(true);
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [comments, setComments] = useState([]);
-  const [showSnackbar, setShowSnackbar] = useState(false);
   const [attachments, setAttachments] = useState([]);
   const [expanded, setExpanded] = useState(false);
   const [raci, setRaci] = useState(null);
   const [raciLoading, setRaciLoading] = useState(true);
-  const [showRaciSnackbar, setShowRaciSnackbar] = useState(false);
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    type: "success",
+    message: "",
+  });
   const [currentUser, setCurrentUser] = useState(() => {
     const storedUser = localStorage.getItem("user");
     return storedUser ? JSON.parse(storedUser) : null;
@@ -50,6 +54,13 @@ const TaskDetailScreen = () => {
     document.addEventListener("keydown", handleEsc);
     return () => document.removeEventListener("keydown", handleEsc);
   }, []);
+
+  const showSnackbarMessage = (message, type = "success", duration = 2500) => {
+    setSnackbar({ open: true, message, type });
+    setTimeout(() => {
+      setSnackbar((prev) => ({ ...prev, open: false }));
+    }, duration);
+  }
 
   const fetchRACI = async () => {
     try {
@@ -219,8 +230,7 @@ const TaskDetailScreen = () => {
 
     const data = await res.json();
     console.log("RACI response:", data);
-    setShowRaciSnackbar(true);
-    setTimeout(() => setShowRaciSnackbar(false), 3000);
+    showSnackbarMessage("RACI Role added successfully!", "success");
 
     await fetchRACI();
 
@@ -448,14 +458,11 @@ const TaskDetailScreen = () => {
             />
           </div>
 
-          {showRaciSnackbar && (
-            <div className="fixed bottom-6 left-6 z-50 flex items-center gap-2 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg shadow-lg animate-fade-in-up transition-all">
-              <Check className="w-5 h-5 text-green-600" />
-              <p className="text-sm font-medium">
-                RACI Role added successfully!
-              </p>
-            </div>
-          )}
+          <Snackbar
+            open={snackbar.open}
+            message={snackbar.message}
+            type={snackbar.type}
+          />
         </main>
       </div>
     </div>
